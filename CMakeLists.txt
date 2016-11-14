@@ -12,7 +12,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-field-initializers")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} \
     -fno-omit-frame-pointer -momit-leaf-frame-pointer -DNDEBUG")
 
-include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
@@ -33,7 +32,7 @@ add_definitions("-DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT")
 
 # Main library source code
 set(SOURCES
-  Dynamic.cc
+  src/Dynamic.cc
 )
 
 add_library(dynamic-static STATIC ${SOURCES})
@@ -53,7 +52,7 @@ set_property(TARGET dynamic-static PROPERTY CXX_STANDARD 14)
 set_property(TARGET dynamic-shared PROPERTY CXX_STANDARD 14)
 
 set(TESTS
-        DynamicTest.cc
+        tests/DynamicTest.cc
 )
 
 set(BINS ${APPS} ${TESTS})
@@ -77,7 +76,7 @@ endforeach(sourcefile ${APPS})
 
 install(TARGETS dynamic-static COMPONENT devel ARCHIVE DESTINATION lib)
 install(TARGETS dynamic-shared COMPONENT runtime DESTINATION lib)
-install(DIRECTORY "${PROJECT_SOURCE_DIR}/iterlib"
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/iterlib"
         COMPONENT devel
         DESTINATION include)
 

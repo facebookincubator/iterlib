@@ -68,8 +68,7 @@ TEST(Dynamic, CompareMixedValuesMap) {
 
 TEST(Dynamic, CompareVectorPair) {
   {
-    auto vec = vector_dynamic_t(
-        { 1L, static_cast<std::string>("foo"), 3L });
+    auto vec = vector_dynamic_t({ 1L, "foo", 3L});
     auto keyVec = std::vector<std::string>({"one", "two", "three"});
     dynamic d = std::make_pair(&keyVec, vec);
     EXPECT_EQ(d, d);
@@ -88,59 +87,49 @@ TEST(Dynamic, CompareVectorPair) {
     EXPECT_LT(d1, d2);
   }
   {
-    auto vec = vector_dynamic_t(
-        { static_cast<std::string>("1") });
+    auto vec = vector_dynamic_t{{"1"}};
     auto keyVec = std::vector<std::string>({"one"});
     dynamic d1 = std::make_pair(&keyVec, vec);
-    auto vec2 =
-      vector_dynamic_t({ static_cast<std::string>("2") });
+    auto vec2 = vector_dynamic_t{{"2"}};
     auto keyVec2 = std::vector<std::string>({"two"});
     dynamic d2 = std::make_pair(&keyVec2, vec2);
     EXPECT_LT(d1, d2);
   }
   {
-    auto vec = vector_dynamic_t(
-        { 1L, static_cast<std::string>("foo"), 3L });
+    auto vec = vector_dynamic_t{{1L, "foo", 3L }};
     auto keyVec = std::vector<std::string>({"one", "two", "three"});
     dynamic d1 = std::make_pair(&keyVec, vec);
-    auto vec2 =
-      vector_dynamic_t({ static_cast<std::string>("2") });
+    auto vec2 = vector_dynamic_t{{"2"}};
     auto keyVec2 = std::vector<std::string>({"two"});
     dynamic d2 = std::make_pair(&keyVec2, vec2);
     EXPECT_THROW(static_cast<void>(d1 < d2), std::logic_error);
   }
   {
     // Tests comparison for same keys, multiple values
-    auto vec = vector_dynamic_t(
-        { 1L, static_cast<std::string>("foo"), 3L });
+    auto vec = vector_dynamic_t{{ 1L, "foo", 3L }};
     auto keyVec = std::vector<std::string>({"one", "two", "three"});
     dynamic d1 = std::make_pair(&keyVec, vec);
-    auto vec2 =
-      vector_dynamic_t({ 1L, static_cast<std::string>("z"), 3L });
+    auto vec2 = vector_dynamic_t{{ 1L, "z", 3L }};
     dynamic d2 = std::make_pair(&keyVec, vec2);
     EXPECT_LT(d1, d2);
   }
   {
     // Tests comparison for different keys
-    auto vec = vector_dynamic_t(
-        { 11L, static_cast<std::string>("foo"), 3L });
+    auto vec = vector_dynamic_t{{ 11L, "foo", 3L }};
     auto keyVec = std::vector<std::string>({"one", "two", "three"});
     dynamic d1 = std::make_pair(&keyVec, vec);
     auto keyVec2 = std::vector<std::string>({"zzz", "two", "three"});
-    auto vec2 =
-      vector_dynamic_t({ 1L, static_cast<std::string>("aa"), 1L });
+    auto vec2 = vector_dynamic_t{{ 1L, "aa", 1L }};
     dynamic d2 = std::make_pair(&keyVec2, vec2);
     EXPECT_LT(d1, d2);
   }
   {
     // Tests comparison for different malformed vector pairs
-    auto vec = vector_dynamic_t(
-        { 11L, static_cast<std::string>("foo"), 3L });
+    auto vec = vector_dynamic_t{{ 11L, "foo", 3L }};
     auto keyVec = std::vector<std::string>({"one", "two", "three"});
     dynamic d1 = std::make_pair(&keyVec, vec);
     auto keyVec2 = std::vector<std::string>({"one", "two", "three"});
-    auto vec2 =
-      vector_dynamic_t({ 11L, static_cast<std::string>("foo")});
+    auto vec2 = vector_dynamic_t{{ 11L, "foo"}};
     dynamic d2 = std::make_pair(&keyVec2, vec2);
     EXPECT_THROW(static_cast<void>(d1 < d2), std::logic_error);
   }
@@ -347,8 +336,7 @@ TEST(Dynamic, Empty) {
   v = static_cast<double>(10);
   EXPECT_FALSE(v.empty());
 
-  vector_dynamic_t strVector = {static_cast<std::string>("hello"),
-                                            static_cast<std::string>("world")};
+  vector_dynamic_t strVector = {"hello", "world"};
 
   v = strVector;
   EXPECT_FALSE(v.empty());
@@ -357,7 +345,7 @@ TEST(Dynamic, Empty) {
   EXPECT_TRUE(v.empty());
 
   unordered_map_t m = {
-      {"b", 20L}, {"a", 10L}, {"c", static_cast<std::string>("hello")}};
+      {"b", 20L}, {"a", 10L}, {"c", "hello"}};
   v = m;
   EXPECT_FALSE(v.empty());
   m.clear();
@@ -365,7 +353,7 @@ TEST(Dynamic, Empty) {
   EXPECT_TRUE(v.empty());
 
   ordered_map_t om{{std::string{"b"}, 20L},
-                   {std::string{"c"}, static_cast<std::string>("hello")},
+                   {std::string{"c"}, "hello"},
                    {std::string{"a"}, 10L}};
   v = om;
   EXPECT_FALSE(v.empty());
@@ -374,8 +362,7 @@ TEST(Dynamic, Empty) {
   EXPECT_TRUE(v.empty());
 
   // Lazy map
-  auto vec =
-      vector_dynamic_t({1L, static_cast<std::string>("foo"), 3L});
+  auto vec = vector_dynamic_t{{1L, "foo", 3L}};
   auto keyVec = std::vector<std::string>({"one", "two", "three"});
   v = std::make_pair(&keyVec, vec);
   EXPECT_FALSE(v.empty());
@@ -405,18 +392,16 @@ TEST(Dynamic, Length) {
   v = folly::StringPiece("hi");
   EXPECT_EQ(v.length(), 2);
 
-  vector_dynamic_t strVector = {static_cast<std::string>("one"),
-                                            static_cast<std::string>("two"),
-                                            static_cast<std::string>("three")};
+  vector_dynamic_t strVector = {"one", "two", "three"};
 
   v = strVector;
   EXPECT_EQ(v.length(), 3);
-  strVector.push_back(static_cast<std::string>("four"));
+  strVector.push_back("four");
   v = strVector;
   EXPECT_EQ(v.length(), 4);
 
   unordered_map_t m = {
-      {"b", 20L}, {"a", 10L}, {"c", static_cast<std::string>("hello")}};
+      {"b", 20L}, {"a", 10L}, {"c", "hello"}};
   v = m;
   EXPECT_EQ(v.length(), 3);
   m.insert(std::make_pair("x", 5.0));
@@ -424,7 +409,7 @@ TEST(Dynamic, Length) {
   EXPECT_EQ(v.length(), 4);
 
   ordered_map_t om{{std::string{"b"}, 20L},
-                   {std::string{"c"}, static_cast<std::string>("hello")},
+                   {std::string{"c"}, "hello"},
                    {std::string{"a"}, 10L}};
   v = om;
   EXPECT_EQ(v.length(), 3);
@@ -432,8 +417,7 @@ TEST(Dynamic, Length) {
   v = om;
   EXPECT_EQ(v.length(), 4);
 
-  auto vec =
-      vector_dynamic_t({1L, static_cast<std::string>("foo"), 3L});
+  auto vec = vector_dynamic_t{{1L, "foo", 3L}};
   auto keyVec = std::vector<std::string>({"one", "two", "three"});
   v = std::make_pair(&keyVec, vec);
   EXPECT_EQ(v.length(), 3);
@@ -460,26 +444,24 @@ TEST(Dynamic, toString) {
   EXPECT_EQ("1", v.toString());
   EXPECT_EQ(v.toString(), v.toJson());
 
-  const vector_dynamic_t strVector = {static_cast<std::string>("hello"),
-                    static_cast<std::string>("world")};
+  const vector_dynamic_t strVector = {"hello", "world"};
 
   v = strVector;
   EXPECT_EQ(v.toJson(), v.toString());
 
   const unordered_map_t m = {
-      {"b", 20L}, {"a", 10L}, {"c", static_cast<std::string>("hello")}};
+      {"b", 20L}, {"a", 10L}, {"c", "hello"}};
   v = m;
   EXPECT_EQ(v.toJson(), v.toString());
 
   const ordered_map_t om{{std::string{"b"}, 20L},
-                {std::string{"c"}, static_cast<std::string>("hello")},
+                {std::string{"c"}, "hello"},
                 {std::string{"a"}, 10L}};
   v = om;
   EXPECT_EQ(v.toJson(), v.toString());
 
   // Vector pair
-  auto vec = vector_dynamic_t(
-      { 1L, static_cast<std::string>("foo"), 3L });
+  auto vec = vector_dynamic_t{{ 1L, "foo", 3L }};
   auto keyVec = std::vector<std::string>({"one", "two", "three"});
   v = std::make_pair(&keyVec, vec);
   EXPECT_EQ(v.toJson(), v.toString());
@@ -514,7 +496,7 @@ TEST(Dynamic, FollyDynamicConversion) {
   EXPECT_TRUE(dyn.at(1) == "world");
 
   const unordered_map_t m =
-  {{ "b", 20L}, { "a", 10L}, {"c", static_cast<std::string>("hello")}};
+  {{ "b", 20L}, { "a", 10L}, {"c", "hello"}};
   v = m;
   dyn = toFollyDynamic(v);
   EXPECT_TRUE(dyn["a"] == 10);
@@ -522,7 +504,7 @@ TEST(Dynamic, FollyDynamicConversion) {
   EXPECT_TRUE(dyn["c"] == "hello");
 
   const ordered_map_t om{{ std::string{"b"}, 20L},
-                         { std::string{"c"}, static_cast<std::string>("hello")},
+                         { std::string{"c"}, "hello"},
                          { std::string{"a"}, 10L}};
   v = om;
   dyn = toFollyDynamic(v);
@@ -531,8 +513,7 @@ TEST(Dynamic, FollyDynamicConversion) {
   EXPECT_TRUE(dyn["c"] == "hello");
 
   // Vector pair
-  auto vec = vector_dynamic_t(
-      { 1L, static_cast<std::string>("foo"), 3L });
+  auto vec = vector_dynamic_t{{ 1L, "foo", 3L }};
   auto keyVec = std::vector<std::string>({"one", "two", "three"});
   v = std::make_pair(&keyVec, vec);
   dyn = toFollyDynamic(v);
@@ -755,8 +736,7 @@ TEST(DynamicAt, Vector) {
 
 TEST(DynamicAt, VectorPair) {
   // Vector pair
-  vector_dynamic_t vec =
-   vector_dynamic_t({ 1L, static_cast<std::string>("foo"), 3L });
+  vector_dynamic_t vec = vector_dynamic_t{{ 1L, "foo", 3L }};
   std::vector<std::string> keyVec =
     std::vector<std::string>({"one", "two", "three"});
   const dynamic d = std::make_pair(&keyVec, vec);
@@ -794,8 +774,7 @@ TEST(DynamicAt, SquareBracketsOp) {
   EXPECT_TRUE(d[key] == value);
   EXPECT_TRUE(d.at(key) == value);
 
-  vector_dynamic_t vec =
-   vector_dynamic_t({ static_cast<std::string>("xyz")});
+  vector_dynamic_t vec = vector_dynamic_t{{ "xyz"}};
   std::vector<std::string> keyVec =
     std::vector<std::string>({"foo"});
   d = std::make_pair(&keyVec, vec);
@@ -828,8 +807,7 @@ TEST(DynamicAt, SelfAssignment) {
 
 TEST(DynamicAt, Assign) {
   {
-    auto vec =
-        vector_dynamic_t({1L, static_cast<std::string>("foo"), 3L});
+    auto vec = vector_dynamic_t{{1L, "foo", 3L}};
     auto keyVec = std::vector<std::string>({"one", "two", "three"});
     dynamic d = std::make_pair(&keyVec, vec);
     dynamic td = 3L;
@@ -930,8 +908,7 @@ TEST(Dynamic, EmptyVectorIterationTest) {
 TEST(Dynamic, IteratorTest) {
   {
     // Vector pair
-    vector_dynamic_t vec =
-        vector_dynamic_t({1L, static_cast<std::string>("foo"), 3L});
+    vector_dynamic_t vec = vector_dynamic_t{{1L, "foo", 3L}};
     std::vector<std::string> keyVec =
         std::vector<std::string>({"one", "two", "three"});
     dynamic d = std::make_pair(&keyVec, vec);
@@ -1010,10 +987,7 @@ TEST(Dynamic, IteratorTest) {
   }
   {
     // std::for_each
-    vector_dynamic_t vec =
-        vector_dynamic_t({static_cast<std::string>("one"),
-                                      static_cast<std::string>("two"),
-                                      static_cast<std::string>("three")});
+    vector_dynamic_t vec = vector_dynamic_t{{"one", "two", "three"}};
     std::vector<std::string> keyVec =
         std::vector<std::string>({"one", "two", "three"});
     dynamic d = std::make_pair(&keyVec, vec);
@@ -1025,10 +999,7 @@ TEST(Dynamic, IteratorTest) {
   }
   {
     // Range for loops
-    vector_dynamic_t vec =
-        vector_dynamic_t({static_cast<std::string>("one"),
-                                      static_cast<std::string>("two"),
-                                      static_cast<std::string>("three")});
+    vector_dynamic_t vec = vector_dynamic_t{{"one", "two", "three"}};
     std::vector<std::string> keyVec =
         std::vector<std::string>({"one", "two", "three"});
     dynamic d = std::make_pair(&keyVec, vec);

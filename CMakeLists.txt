@@ -33,7 +33,7 @@ add_definitions("-DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT")
 
 # Main library source code
 set(SOURCES
-  src/Dynamic.cc
+  src/Dynamic.cpp
   src/Iterator.cpp
   src/WrappedIterator.cpp
   src/LimitIterator.cpp
@@ -57,7 +57,7 @@ set_property(TARGET dynamic-static PROPERTY CXX_STANDARD 14)
 set_property(TARGET dynamic-shared PROPERTY CXX_STANDARD 14)
 
 set(TESTS
-        tests/DynamicTest.cc
+        tests/DynamicTest.cpp
         tests/IteratorTest.cpp
 )
 
@@ -68,7 +68,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I ${BOOST_INCLUDE_DIR}")
 endif (BOOST_FOUND)
 
 foreach(sourcefile ${BINS})
-    string(REPLACE ".cc" "" exename ${sourcefile})
+    string(REPLACE ".cpp" "" exename ${sourcefile})
     string(REGEX REPLACE "^((.+)/)+" "" exename ${exename})
     add_executable(${exename}${ARTIFACT_SUFFIX} ${sourcefile})
     list(APPEND EXES ${exename}${ARTIFACT_SUFFIX})

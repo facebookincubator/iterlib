@@ -27,12 +27,17 @@ set(BOOST_ROOT "/usr/local/boost/1.55.0")
 find_package(Boost 1.51 COMPONENTS
              context thread program_options regex system chrono
              REQUIRED)
+include_directories(${Boost_INCLUDE_DIR})
 # Required for ubuntu 16.04/boost-1.58
 add_definitions("-DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT")
 
 # Main library source code
 set(SOURCES
   src/Dynamic.cc
+  src/Iterator.cpp
+  src/WrappedIterator.cpp
+  src/LimitIterator.cpp
+  src/Item.cpp
 )
 
 add_library(dynamic-static STATIC ${SOURCES})
@@ -53,6 +58,7 @@ set_property(TARGET dynamic-shared PROPERTY CXX_STANDARD 14)
 
 set(TESTS
         tests/DynamicTest.cc
+        tests/IteratorTest.cpp
 )
 
 set(BINS ${APPS} ${TESTS})

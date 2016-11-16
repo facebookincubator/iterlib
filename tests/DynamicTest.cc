@@ -1084,7 +1084,55 @@ TEST(DynamicDotProduct, vector) {
   EXPECT_EQ(0.0, d4 * d4);
 }
 
+void DynamicToString(int iters, size_t size) {
+  vector_dynamic_t v;
+  std::vector<std::string> keyVec =
+      std::vector<std::string>({"some_int", "some_str"});
+  BENCHMARK_SUSPEND {
+    v.reserve(size);
+    FOR_EACH_RANGE (i, 0, size) {
+      vector_dynamic_t vals{{int64_t(i), "foo"}};
+      v.emplace_back(std::make_pair(&keyVec, std::move(vals)));
+    }
+  }
+  std::string s;
+  FOR_EACH_RANGE (i, 0, iters) {
+    FOR_EACH_RANGE (j, 0, size) {
+      s += v[j].at("some_str").toString();
+    }
+  }
+  VLOG(1) << s;
+}
+
+BENCHMARK_PARAM(DynamicToString, 1000);
+BENCHMARK_PARAM(DynamicToString, 10000);
+BENCHMARK_PARAM(DynamicToString, 100000);
+
+void FollyDynamicToString(int iters, size_t size) {
+  folly::dynamic v = folly::dynamic::array();
+  BENCHMARK_SUSPEND {
+    FOR_EACH_RANGE (i, 0, size) {
+      v.push_back(folly::dynamic::object
+                  ("some_int", i)
+                  ("some_str", "foo"));
+    }
+  }
+  std::string s;
+  FOR_EACH_RANGE (i, 0, iters) {
+    FOR_EACH_RANGE (j, 0, size) {
+      s += v[j].at("some_str").asString();
+    }
+  }
+  VLOG(1) << s;
+}
+
+BENCHMARK_PARAM(FollyDynamicToString, 1000);
+BENCHMARK_PARAM(FollyDynamicToString, 10000);
+BENCHMARK_PARAM(FollyDynamicToString, 100000);
+
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
   auto ret = RUN_ALL_TESTS();
+  folly::runBenchmarks();
+  return ret;
 }

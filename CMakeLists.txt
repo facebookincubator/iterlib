@@ -69,6 +69,7 @@ foreach(sourcefile ${BINS})
     target_link_libraries(${exename}${ARTIFACT_SUFFIX} dynamic-shared
                           gtest glog rt double-conversion
                           ${FOLLY_LIBRARIES}
+                          ${FOLLY_BENCHMARK_LIBRARIES}
                           ${Boost_LIBRARIES}
                           ${CMAKE_THREAD_LIBS_INIT})
     set_property(TARGET ${exename}${ARTIFACT_SUFFIX} PROPERTY CXX_STANDARD 14)

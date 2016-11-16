@@ -58,3 +58,23 @@ TODO:
   and then to json
 
 * Better glue for language runtimes such as python or lua
+
+INSTALLATION:
+============
+
+Ubuntu 16:
+
+sudo apt-get install libgtest-dev
+sudo apt-get install libboost-all-dev
+sudo apt-get install libflags-dev
+
+Install folly from source https:://github.com/facebook/folly
+sudo apt-get install libssl-dev
+sudo apt-get install libdouble-conversion-dev
+
+cd iterlib
+mkdir -p build/release
+cd build/release
+cmake ../..
+make -j
+

@@ -37,6 +37,8 @@ set(SOURCES
   src/Iterator.cpp
   src/WrappedIterator.cpp
   src/LimitIterator.cpp
+  src/ReverseIterator.cpp
+  src/RandomIterator.cpp
   src/Item.cpp
 )
 

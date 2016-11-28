@@ -15,7 +15,7 @@ Iterator::Iterator(IteratorType type)
 
 bool Iterator::doSkipTo(id_t target) {
   // Ids are sorted in reverse order (larger ids go first)
-  while (value().id() > target && next())
+  while (id() > target && next())
     ;
 
   return !done();
@@ -48,5 +48,44 @@ bool Iterator::doSkipToPredicate(AttributeNameVec predicate,
     cmpVal = partialCompare(target, value(), predicate);
   } while (cmpVal == PartialOrder::LT && next());
   return !done();
+}
+
+folly::Future<folly::Unit> CompositeIterator::prepare() {
+  if (prepared_) {
+    return folly::makeFuture();
+  }
+
+  std::vector<folly::Future<folly::Unit>> fs;
+  fs.reserve(iterators_.size());
+  for (auto& iter : iterators_) {
+    if (iter) {
+      fs.emplace_back(iter->prepare());
+    }
+  }
+  return folly::collectAll(fs)
+    .then([this](std::vector<folly::Try<folly::Unit>>&& vec) {
+        for (auto& t : vec) {
+          t.throwIfFailed();
+        }
+        bool hasFirstAvailable = false;
+        for (auto& iter : iterators_) {
+          if (!iter || iter->done()) {
+            setDone();
+            break;
+          }
+          if (!hasFirstAvailable) {
+            key_ = iter->key();
+            hasFirstAvailable = true;
+          }
+        }
+      })
+    .onError([](const std::exception& ex) {
+        LOG(ERROR) << "Failed to prepare CompositeIterator's child iters: "
+                   << ex.what();
+        throw ex;
+      })
+    .ensure([this]() {
+      prepared_ = true;
+    });
 }
 }

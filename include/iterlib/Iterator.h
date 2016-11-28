@@ -139,6 +139,8 @@ class Iterator : public IteratorTraits {
 
   bool advancedAtleastOnce() const { return advancedAtleastOnce_; }
 
+  id_t id() const { return value().id(); }
+
   /**
    * Progresses the pointer in the iterator to a value which is at or
    * just beyond the given value target
@@ -154,7 +156,7 @@ class Iterator : public IteratorTraits {
     return ret;
   }
 
-  // skip n element in the iterator
+  // skip n Items in the iterator
   bool skip(size_t n) {
     auto ret = doSkip(n);
     advancedAtleastOnce_ = true;
@@ -163,8 +165,24 @@ class Iterator : public IteratorTraits {
 
   virtual IteratorType getType() const { return iteratorType_; }
 
+  // Return an opaque cookie that could be used to resume
+  // iteration after a roundtrip to the client. This is about
+  // as efficient as doing an optimizied skipToPredicate()
+  //
+  // Potential implementation strategy: concatenate cookies
+  // from all leaf iterators and perform Seek() or skipToPredicate()
+  // on all of them before resuming execution.
+  //
+  // For complex iterator trees, a less optimal, but more general
+  // implementation is below. Such cookies can be resumed via:
+  //
+  // std::tie(ts, id) = cookie.split(..);
+  // while(it->next()) {
+  //   auto i = it->key();
+  //   if (i.ts() == ts) && (i.id() == id) break;
+  // }
   virtual std::string cookie() const {
-    return folly::stringPrintf("%ld,%lu", value().ts(), value().id());
+    return folly::stringPrintf("%ld,%lu", value().ts(), id());
   }
 
   virtual void reset() { isDone_ = false; }
@@ -207,5 +225,42 @@ class Iterator : public IteratorTraits {
 
  private:
   IteratorType iteratorType_;
+};
+
+// Iterator with more than one child
+class CompositeIterator: public Iterator {
+public:
+  explicit CompositeIterator(IteratorVector& iters)
+    : iterators_(std::move(iters)) {}
+
+  CompositeIterator();
+
+  folly::Future<folly::Unit> prepare() override;
+
+  size_t numChildIters() const {
+    return iterators_.size();
+  }
+
+  virtual const IteratorVector& children() const override {
+    return iterators_;
+  }
+
+protected:
+  IteratorVector iterators_;
+  Item key_;  // Typically copied from the first non-null child
+};
+
+struct StdLessComp : public std::less<Iterator *> {
+  bool operator()(const Iterator *i1,
+                  const Iterator *i2) {
+    return i1->value() < i2->value();
+  }
+};
+
+struct IdLessComp : public std::less<Iterator *> {
+  bool operator() (const Iterator *i1,
+                   const Iterator *i2) {
+    return i1->id() < i2->id();
+  }
 };
 }

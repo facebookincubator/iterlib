@@ -27,29 +27,38 @@ class Item : public dynamic {
 
   Item() : dynamic() {}
   Item(const dynamic& other) : dynamic(other) {}
+  virtual ~Item() {}
 
   Item(const Item& other) = default;
   Item(Item&& other) = default;
   Item& operator=(const Item& other) = default;
   Item& operator=(Item&& other) = default;
 
-  bool operator==(const Item& other) const {
-    return dynamic::operator==(static_cast<const dynamic&>(other));
+  bool operator<(const Item& other) const {
+    return std::make_tuple(value(), ts(), id()) <
+           std::make_tuple(other.value(), other.ts(), other.id());
   }
 
-  id_t id() const {
+  bool operator==(const Item& other) const {
+    return std::make_tuple(value(), ts(), id()) ==
+           std::make_tuple(other.value(), other.ts(), other.id());
+  }
+
+  virtual id_t id() const {
     try {
       return at(kIdKey).get<int64_t>();
     } catch (const std::exception& ex) {
       LOG_EVERY_N(WARNING, 1000) << ex.what();
+      return kUninitializedId;
     }
   }
 
-  int64_t ts() const {
+  virtual int64_t ts() const {
     try {
       return at(kTimeKey).get<int64_t>();
     } catch (const std::exception& ex) {
       LOG_EVERY_N(WARNING, 1000) << ex.what();
+      return 0;
     }
   }
 
@@ -81,13 +90,13 @@ class ItemOptimized : public Item {
     *this = dynamic();
   }
 
-  id_t id() const { return id_; }
+  virtual id_t id() const override { return id_; }
 
   void setId(id_t id) { id_ = id; }
 
   void setTs(int64_t ts) { ts_ = ts; }
 
-  int64_t ts() const { return ts_; }
+  virtual int64_t ts() const override { return ts_; }
 
   void syncIdTs() {
     try {

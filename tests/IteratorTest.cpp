@@ -8,6 +8,7 @@
 #include "iterlib/LimitIterator.h"
 #include "iterlib/RandomIterator.h"
 #include "iterlib/ReverseIterator.h"
+#include "iterlib/CountIterator.h"
 
 using namespace folly;
 using namespace iterlib::variant;
@@ -85,6 +86,33 @@ TEST(IteratorTest, RandomIterator) {
   EXPECT_TRUE(randomIt->next());
   EXPECT_FALSE(randomIt->next());
 }
+
+TEST(IteratorTest, CountIterator) {
+  const auto res = std::vector<ItemOptimized>{
+      {1, 0, unordered_map_t{{"int1", 2L},
+                             {"str1", std::string("banana")},
+                             {"int2", 3L}}},
+      {2, 0, unordered_map_t{{"int1", 1L},
+                             {"str1", std::string("orange")},
+                             {"int2", 3L}}},
+      {3, 0, unordered_map_t{{"int1", 1L},
+                             {"str1", std::string("apple")},
+                             {"int2", 2L}}},
+      {4, 0, unordered_map_t{{"int1", 1L},
+                             {"str1", std::string("banana")},
+                             {"int2", 4L}}},
+  };
+
+  auto it =
+      folly::make_unique<FutureIterator<ItemOptimized>>(folly::makeFuture(res));
+  auto countIt = folly::make_unique<CountIterator>(it.release());
+  countIt->prepare();
+  EXPECT_TRUE(countIt->next());
+  EXPECT_EQ(CountIterator::kCountKey, countIt->key());
+  EXPECT_EQ(4, countIt->value());
+  EXPECT_FALSE(countIt->next());
+}
+
 
 int main(int argc, char* argv[]) {
   testing::InitGoogleTest(&argc, argv);

@@ -46,6 +46,7 @@ set(SOURCES
   src/LimitIterator.cpp
   src/ReverseIterator.cpp
   src/RandomIterator.cpp
+  src/CountIterator.cpp
   src/Item.cpp
 )
 

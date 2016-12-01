@@ -51,6 +51,8 @@ set(SOURCES
   src/AndIterator.cpp
   src/OrIterator.cpp
   src/DifferenceIterator.cpp
+  src/MergeIterator.cpp
+  src/ProjectIterator.cpp
   src/Item.cpp
 )
 
@@ -75,6 +77,10 @@ set(TESTS
         tests/IteratorTest.cpp
         tests/RocksDBIteratorTest.cpp
         tests/OrderByIteratorTest.cpp
+        tests/MergeIteratorTest.cpp
+        tests/NestIteratorTest.cpp
+        tests/ProjectIteratorTest.cpp
+        tests/LetIteratorTest.cpp
 )
 
 set(BINS ${APPS} ${TESTS})

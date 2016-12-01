@@ -139,4 +139,17 @@ inline dynamic& dynamic::atWithInsert(const dynamic& key) {
   }
 }
 
+inline dynamic dynamic::asRenamedMap(const dynamic& oldName,
+                                     const dynamic& newName) const {
+  auto omap = ordered_map_t();
+  for (const auto& i : *this) {
+    if (i.first == oldName) {
+      omap.insert({newName, i.second.get()});
+    } else {
+      omap.insert({i.first, i.second.get()});
+    }
+  }
+  return omap;
+}
+
 }}

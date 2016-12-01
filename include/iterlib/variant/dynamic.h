@@ -233,6 +233,23 @@ public:
     }
   }
 
+  dynamic asProjectedMap(const std::vector<std::string>& attrs) const {
+    auto projection = ordered_map_t();
+    if (!isObject()) {
+      throw std::logic_error("Not a map type");
+    }
+    for (const auto& v : attrs) {
+      try {
+        projection.insert({v, at(v)});
+      } catch (std::out_of_range& e) {
+        projection.insert({v, kNullDynamic});
+      }
+    }
+    return projection;
+  }
+
+  dynamic asRenamedMap(const dynamic& oldName, const dynamic& newName) const;
+
   // True if the underlying dynamic type is a map type
   // (supports key value pairs), false otherwise
   bool isObject() const {
@@ -403,7 +420,7 @@ void PrintTo(const dynamic& dyn, std::ostream* os);
 }}
 
 #include "iterlib/variant/dynamic-detail.h"
+#include "iterlib/variant/dynamic-iter.h"
 #include "iterlib/variant/dynamic-inl.h"
 #include "iterlib/variant/dynamic-folly.h"
-#include "iterlib/variant/dynamic-iter.h"
 #include "iterlib/variant/dynamic-json.h"

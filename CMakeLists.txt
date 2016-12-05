@@ -53,6 +53,7 @@ set(SOURCES
   src/DifferenceIterator.cpp
   src/MergeIterator.cpp
   src/ProjectIterator.cpp
+  src/GroupByIterator.cpp
   src/Item.cpp
 )
 
@@ -81,6 +82,7 @@ set(TESTS
         tests/NestIteratorTest.cpp
         tests/ProjectIteratorTest.cpp
         tests/LetIteratorTest.cpp
+        tests/GroupByIteratorTest.cpp
 )
 
 set(BINS ${APPS} ${TESTS})

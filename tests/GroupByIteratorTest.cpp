@@ -198,6 +198,41 @@ TEST(GroupByIterator, MultiAttrOrderOnKey) {
                         groupedResult);
 }
 
+TEST(GroupBySortedCountIterator, GroupByTwoAttr) {
+  // sorted by <int1, int2> descending
+  const auto res = std::vector<ItemOptimized>{{
+      {2, 0, ordered_map_t{{"int1", 2L},
+                           {"int2", 2L},
+                           {"string", std::string{"baz"}}}},
+      {4, 0, ordered_map_t{{"int1", 1L},
+                           {"int2", 2L},
+                           {"string", std::string{"foo"}}}},
+      {1, 0, ordered_map_t{{"int1", 1L},
+                           {"int2", 1L},
+                           {"string", std::string{"foo"}}}},
+      {3, 0, ordered_map_t{{"int1", 1L},
+                           {"int2", 1L},
+                           {"string", std::string{"bar"}}}},
+  }};
+  const auto groupedResult = std::vector<int64_t>{{
+    1,  // 2, 2
+    1,  // 1, 2
+    2,  // 1, 1
+  }};
+
+  auto it =
+      folly::make_unique<FutureIterator<ItemOptimized>>(folly::makeFuture(res));
+  auto groupByIt = folly::make_unique<GroupBySortedCountIterator>(
+                       it.release(),
+                       AttributeNameVec{{{"int1"}, {"int2"}}});
+  groupByIt->prepare();
+  int i = 0;
+  while(groupByIt->next()) {
+    EXPECT_EQ(groupedResult[i++], groupByIt->value().get<int64_t>());
+  }
+  EXPECT_EQ(3, i);
+}
+
 int main(int argc, char* argv[]) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

@@ -14,11 +14,6 @@
 #include "iterlib/OrIterator.h"
 #include "iterlib/DifferenceIterator.h"
 
-#include "iterlib/LetIterator.h"
-#include "iterlib/MergeIterator.h"
-#include "iterlib/NestIterator.h"
-#include "iterlib/ProjectIterator.h"
-
 using namespace folly;
 using namespace iterlib::variant;
 using namespace iterlib;

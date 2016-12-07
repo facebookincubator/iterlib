@@ -54,6 +54,7 @@ set(SOURCES
   src/MergeIterator.cpp
   src/ProjectIterator.cpp
   src/GroupByIterator.cpp
+  src/FilterIterator.cpp
   src/Item.cpp
 )
 
@@ -83,6 +84,7 @@ set(TESTS
         tests/ProjectIteratorTest.cpp
         tests/LetIteratorTest.cpp
         tests/GroupByIteratorTest.cpp
+        tests/FilterIteratorTest.cpp
 )
 
 set(BINS ${APPS} ${TESTS})

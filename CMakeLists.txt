@@ -47,6 +47,7 @@ set(SOURCES
   src/ReverseIterator.cpp
   src/RandomIterator.cpp
   src/CountIterator.cpp
+  src/OrderByIterator.cpp
   src/Item.cpp
 )
 
@@ -70,6 +71,7 @@ set(TESTS
         tests/DynamicTest.cpp
         tests/IteratorTest.cpp
         tests/RocksDBIteratorTest.cpp
+        tests/OrderByIteratorTest.cpp
 )
 
 set(BINS ${APPS} ${TESTS})

@@ -19,13 +19,20 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 find_package(Threads)
 find_package(Gtest)
 find_package(Folly)
+find_package(Rocksdb)
+find_package(BZip2)
+find_package(JeMalloc)
 
 include_directories(${FOLLY_INCLUDE_DIR})
+include_directories(${ROCKSDB_INCLUDE_DIR})
+include_directories(${BZIP2_INCLUDE_DIR})
+include_directories(${JEMALLOC_INCLUDE_DIR})
 
 set(Boost_NO_SYSTEM_PATHS 1)
 set(BOOST_ROOT "/usr/local/boost/1.55.0")
 find_package(Boost 1.51 COMPONENTS
              context thread program_options regex system chrono
+             filesystem
              REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 # Required for ubuntu 16.04/boost-1.58
@@ -61,6 +68,7 @@ set_property(TARGET dynamic-shared PROPERTY CXX_STANDARD 14)
 set(TESTS
         tests/DynamicTest.cpp
         tests/IteratorTest.cpp
+        tests/RocksDBIteratorTest.cpp
 )
 
 set(BINS ${APPS} ${TESTS})
@@ -78,6 +86,9 @@ foreach(sourcefile ${BINS})
                           gtest glog rt double-conversion
                           ${FOLLY_LIBRARIES}
                           ${FOLLY_BENCHMARK_LIBRARIES}
+                          ${ROCKSDB_LIBRARIES}
+                          ${BZIP2_LIBRARIES}
+                          ${JEMALLOC_LIBRARIES}
                           ${Boost_LIBRARIES}
                           ${CMAKE_THREAD_LIBS_INIT})
     set_property(TARGET ${exename}${ARTIFACT_SUFFIX} PROPERTY CXX_STANDARD 14)

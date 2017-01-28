@@ -1,0 +1,13 @@
+Installation:
+============
+
+Requires python-3.5
+Requires python-jsonschema
+
+python3.5 tests.py
+
+Notes:
+=====
+
+* heapq.merge(.., revserse=True) fails for old versions of python
+* kvstore.py requires python bindings for your favorite key value store

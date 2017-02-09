@@ -134,10 +134,16 @@ endforeach(sourcefile ${TESTS})
 
 install(TARGETS dynamic-static COMPONENT devel ARCHIVE DESTINATION lib)
 install(TARGETS dynamic-shared COMPONENT runtime DESTINATION lib)
+install(TARGETS iterlib-static COMPONENT devel ARCHIVE DESTINATION lib)
+install(TARGETS iterlib-shared COMPONENT runtime DESTINATION lib)
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/iterlib"
         COMPONENT devel
         DESTINATION include)
 
-install(TARGETS ${EXES} RUNTIME
-        DESTINATION bin
-        COMPONENT tools)
+# Uncomment when we actually have tools that are not tests
+#install(TARGETS ${EXES} RUNTIME
+#        DESTINATION bin
+#        COMPONENT tools)
+
+include(Rpm)
+include(Deb)

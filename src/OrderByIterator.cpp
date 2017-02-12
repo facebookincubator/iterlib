@@ -4,9 +4,10 @@
 
 namespace iterlib {
 
-bool OrderByIterator::Comparator::
-operator()(const std::pair<const Item*, int>& v1,
-           const std::pair<const Item*, int>& v2) const {
+template <typename T>
+bool OrderByIterator<T>::Comparator::
+operator()(const std::pair<const T*, int>& v1,
+           const std::pair<const T*, int>& v2) const {
   auto cmp =
       partialCompare(*v1.first, *v2.first, columns_, isColumnDescending_);
   return cmp == PartialOrder::LT ||

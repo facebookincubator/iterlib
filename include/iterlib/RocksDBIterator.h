@@ -16,13 +16,14 @@ inline folly::StringPiece sliceToStringPiece(const rocksdb::Slice s) {
   return {s.data(), s.size()};
 }
 
-class RocksDBIterator : public Iterator {
+template <typename T=Item>
+class RocksDBIterator : public Iterator<T> {
  public:
   RocksDBIterator(rocksdb::Iterator* iter) : iter_(iter) {}
 
-  const Item& key() const override { return keys_.back(); }
+  const T& key() const override { return keys_.back(); }
 
-  const Item& value() const override { return values_.back(); }
+  const T& value() const override { return values_.back(); }
 
  protected:
   bool doNext() override {
@@ -56,8 +57,8 @@ class RocksDBIterator : public Iterator {
   // via key()/value() methods remain valid until the iterator
   // is destroyed. Complexity of lookup irrelevant. Hence std::list
   // vector invalidates references on re-allocation
-  mutable std::list<Item> keys_;
-  mutable std::list<Item> values_;
+  mutable std::list<T> keys_;
+  mutable std::list<T> values_;
 
   std::unique_ptr<rocksdb::Iterator> iter_;
   bool firstTime_ = true;

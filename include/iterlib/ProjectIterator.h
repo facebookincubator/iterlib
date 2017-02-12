@@ -11,14 +11,15 @@ namespace iterlib {
  *
  * The returned value() is always an ordered_map_t
  */
-class ProjectIterator : public WrappedIterator {
+template <typename T=Item>
+class ProjectIterator : public WrappedIterator<T> {
 public:
-  ProjectIterator(Iterator* iter, const AttributeNameVec& attrNames)
-    : WrappedIterator(iter)
+  ProjectIterator(Iterator<T>* iter, const AttributeNameVec& attrNames)
+    : WrappedIterator<T>(iter)
     , attrNames_(attrNames) {}
 
 
-  virtual const Item& value() const override;
+  virtual const T& value() const override;
 
   virtual bool orderPreserving() const override {
     return true;

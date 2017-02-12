@@ -6,21 +6,22 @@
 
 namespace iterlib {
 
-class OrderByIterator : public WrappedIterator {
+template <typename T=Item>
+class OrderByIterator : public WrappedIterator<T> {
  public:
-  OrderByIterator(Iterator* iter, AttributeNameVec orderByColumns,
+  OrderByIterator(Iterator<T>* iter, AttributeNameVec orderByColumns,
                   std::vector<bool> isColumnDescending)
-      : WrappedIterator(iter), orderByColumns_(std::move(orderByColumns)),
+      : WrappedIterator<T>(iter), orderByColumns_(std::move(orderByColumns)),
         isColumnDescending_(std::move(isColumnDescending)), first_(true) {
     CHECK_EQ(orderByColumns_.size(), isColumnDescending_.size());
-    if ((innerIter_ == nullptr) || (innerIter_->done())) {
-      prepared_ = true;
-      setDone();
+    if ((this->innerIter_ == nullptr) || (this->innerIter_->done())) {
+      this->prepared_ = true;
+      this->setDone();
       return;
     }
   }
 
-  OrderByIterator(Iterator* iter, AttributeNameVec orderByColumns)
+  OrderByIterator(Iterator<T>* iter, AttributeNameVec orderByColumns)
       : OrderByIterator(iter, orderByColumns,
                         std::vector<bool>(orderByColumns.size(), true)) {}
 
@@ -35,11 +36,11 @@ class OrderByIterator : public WrappedIterator {
     // isColumnDescending_[i] indicates if columns_[i] is in descending order
     const AttributeNameVec& columns_;
     const std::vector<bool>& isColumnDescending_;
-    bool operator()(const std::pair<const Item*, int>& v1,
-                    const std::pair<const Item*, int>& v2) const;
+    bool operator()(const std::pair<const T*, int>& v1,
+                    const std::pair<const T*, int>& v2) const;
   };
 
-  virtual const Item& value() const override {
+  virtual const T& value() const override {
     if (!results_.empty()) {
       return *results_.front().first;
     } else {
@@ -48,12 +49,12 @@ class OrderByIterator : public WrappedIterator {
   }
 
   bool doNext() override {
-    if (done()) {
+    if (this->done()) {
       return false;
     }
 
     if (first_) {
-      load();
+      this->load();
       first_ = false;
     } else {
       std::pop_heap(results_.begin(), results_.end(),
@@ -62,7 +63,7 @@ class OrderByIterator : public WrappedIterator {
     }
 
     if (results_.empty()) {
-      setDone();
+      this->setDone();
       return false;
     }
 
@@ -76,8 +77,8 @@ class OrderByIterator : public WrappedIterator {
  protected:
   void load() {
     int sequenceNum = 0;
-    while (innerIter_->next()) {
-      results_.push_back(std::make_pair(&(innerIter_->value()), sequenceNum));
+    while (this->innerIter_->next()) {
+      results_.push_back(std::make_pair(&(this->innerIter_->value()), sequenceNum));
       ++sequenceNum;
     }
 
@@ -86,7 +87,7 @@ class OrderByIterator : public WrappedIterator {
   }
 
  private:
-  std::vector<std::pair<const Item*, int>> results_;
+  std::vector<std::pair<const T*, int>> results_;
   AttributeNameVec orderByColumns_;
   std::vector<bool> isColumnDescending_;
   bool first_;

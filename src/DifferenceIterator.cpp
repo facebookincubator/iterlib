@@ -2,12 +2,13 @@
 
 namespace iterlib {
 
-bool DifferenceIterator::advanceToNextDifference() {
+template <typename T>
+bool DifferenceIterator<T>::advanceToNextDifference() {
   if (getSecondIterator() != nullptr) {
     while (getSecondIterator()->skipTo(getFirstIterator()->id()) &&
            getFirstIterator()->id() == getSecondIterator()->id()) {
       if (!getFirstIterator()->next()) {
-        setDone();
+        this->setDone();
         return false;
       }
     }
@@ -16,26 +17,28 @@ bool DifferenceIterator::advanceToNextDifference() {
   return true;
 }
 
-bool DifferenceIterator::doNext() {
-  if (done()) {
+template <typename T>
+bool DifferenceIterator<T>::doNext() {
+  if (this->done()) {
     return false;
   }
 
   if (!getFirstIterator()->next()) {
-    setDone();
+    this->setDone();
     return false;
   }
 
   return advanceToNextDifference();
 }
 
-bool DifferenceIterator::doSkipTo(id_t id) {
-  if (done()) {
+template <typename T>
+bool DifferenceIterator<T>::doSkipTo(id_t id) {
+  if (this->done()) {
     return false;
   }
 
   if (!getFirstIterator()->skipTo(id)){
-    setDone();
+    this->setDone();
     return false;
   }
 

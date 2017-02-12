@@ -7,8 +7,9 @@
 
 namespace iterlib {
 
-folly::Future<folly::Unit> WrappedIterator::prepare() {
-  if (prepared_) {
+template <typename T>
+folly::Future<folly::Unit> WrappedIterator<T>::prepare() {
+  if (this->prepared_) {
     return folly::makeFuture();
   }
   if (innerIter_) {
@@ -22,9 +23,9 @@ folly::Future<folly::Unit> WrappedIterator::prepare() {
                      << ex.what();
           throw ex;
         })
-        .ensure([this]() { prepared_ = true; });
+        .ensure([this]() { this->prepared_ = true; });
   }
-  prepared_ = true;
+  this->prepared_ = true;
   return folly::makeFuture();
 }
 }

@@ -5,28 +5,29 @@
 namespace iterlib {
 
 // count the number of items in iter
-class CountIterator : public WrappedIterator {
+template <typename T=Item>
+class CountIterator : public WrappedIterator<T> {
 public:
-  explicit CountIterator(Iterator* iter)
-    : WrappedIterator(iter)
+  explicit CountIterator(Iterator<T>* iter)
+    : WrappedIterator<T>(iter)
     , countValue_(-1) {
   }
 
-  virtual const Item& key() const override {
+  virtual const T& key() const override {
     return kCountKey;
   }
 
-  virtual const Item& value() const override {
+  virtual const T& value() const override {
     return countValue_;
   }
 
-  static const Item kCountKey;
+  static const T kCountKey;
 
 protected:
   bool doNext() override;
 
 private:
-  mutable Item countValue_;
+  mutable T countValue_;
 };
 
 }

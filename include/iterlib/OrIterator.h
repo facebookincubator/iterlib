@@ -3,13 +3,14 @@
 
 namespace iterlib {
 
-class OrIteratorBase : public CompositeIterator {
+template <typename T=Item>
+class OrIteratorBase : public CompositeIterator<T> {
  public:
-  explicit OrIteratorBase(IteratorVector& children);
+  explicit OrIteratorBase(IteratorVector<T>& children);
   void updateActiveChildren();
 
-  virtual const Item& value() const override {
-    if (!done() && activeChildren_.front()) {
+  virtual const T& value() const override {
+    if (!this->done() && activeChildren_.front()) {
       return activeChildren_.front()->value();
     }
     return Item::kEmptyItem;
@@ -18,7 +19,7 @@ class OrIteratorBase : public CompositeIterator {
  protected:
   // unmanaged pointers. Memory is managed via
   // children_ in the parent class
-  std::vector<Iterator *> activeChildren_;
+  std::vector<Iterator<T> *> activeChildren_;
 };
 
 // Assuming that input iterators are sorted, performs
@@ -26,10 +27,10 @@ class OrIteratorBase : public CompositeIterator {
 // don't care about ordering, consider using the
 // ConcatIterator below. If input is not sorted,
 // consider making them sorted via OrderbyIterator
-template <class Comparator>
-class OrIterator: public OrIteratorBase {
+template <class Comparator, typename T=Item>
+class OrIterator: public OrIteratorBase<T> {
 public:
-  explicit OrIterator(IteratorVector& children);
+  explicit OrIterator(IteratorVector<T>& children);
 
 protected:
   bool doNext() override;
@@ -37,18 +38,23 @@ protected:
 
   void doFirst();
   bool firstTime_;
+
+  using OrIteratorBase<T>::activeChildren_;
+  using Iterator<T>::id;
+  using Iterator<T>::max;
 };
 
 // OrIterator that dedups by id() if requested
 // Output order is undefined. Typically performs
 // a simple concatenation of child iterators
-class ConcatIterator: public OrIteratorBase {
+template <typename T=Item>
+class ConcatIterator: public OrIteratorBase<T> {
 public:
-  explicit ConcatIterator(IteratorVector& children, bool dedup=true);
+  explicit ConcatIterator(IteratorVector<T>& children, bool dedup=true);
 
-  virtual const Item& value() const override {
-    if (!done()) {
-      return activeChildren_[idx_]->value();
+  virtual const T& value() const override {
+    if (!this->done()) {
+      return this->activeChildren_[idx_]->value();
     }
     return Item::kEmptyItem;
   }
@@ -56,8 +62,8 @@ public:
   virtual folly::Future<folly::Unit> prepare() override;
 
 protected:
-  Iterator* currentChild() {
-    return done() ? nullptr : activeChildren_[idx_];
+  Iterator<T>* currentChild() {
+    return this->done() ? nullptr : this->activeChildren_[idx_];
   }
 
   bool doNext() override;
@@ -72,13 +78,17 @@ protected:
   }
 
 private:
+  using OrIteratorBase<T>::activeChildren_;
+
   // a set of returned ids so far
   std::unordered_set<id_t> results_;
   size_t idx_;
   bool dedup_;
 };
 
-using UnionIterator = OrIterator<IdLessComp>;
-using SortedMergeIterator = OrIterator<StdLessComp>;
+template <typename T=Item>
+using UnionIterator = OrIterator<IdLessComp<T>, T>;
+template <typename T=Item>
+using SortedMergeIterator = OrIterator<StdLessComp<T>, T>;
 
 }

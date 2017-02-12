@@ -34,6 +34,7 @@
 // a word, don't call prepare() on an iterator multiple times.
 #pragma once
 
+#include <boost/iterator/iterator_facade.hpp>
 #include <folly/futures/Future.h>
 #include <limits>
 #include <memory>
@@ -60,8 +61,10 @@ enum class ResultOrder {
 };
 
 typedef std::vector<std::string> AttributeNameVec;
+template <typename T>
 class Iterator;
-typedef std::vector<std::unique_ptr<Iterator>> IteratorVector;
+template <typename T>
+using IteratorVector = std::vector<std::unique_ptr<Iterator<T>>>;
 
 // These methods are useful to avoid sorting an already sorted
 // list or fetching the same data twice instead of rewinding
@@ -101,7 +104,12 @@ class IteratorTraits {
   ResultOrder order_;
 };
 
-class Iterator : public IteratorTraits {
+template <typename T=Item>
+class Iterator
+  : public IteratorTraits,
+    public boost::iterator_facade<Iterator<T>,
+                                  const T,
+                                  boost::forward_traversal_tag> {
  public:
   explicit Iterator(IteratorType type = IteratorType::NONE);
   Iterator(const Iterator&) = delete;
@@ -118,9 +126,9 @@ class Iterator : public IteratorTraits {
 
   bool next();
 
-  virtual const Item& key() const { return key_; }
+  virtual const T& key() const { return key_; }
 
-  virtual const Item& value() const = 0;
+  virtual const T& value() const = 0;
 
   virtual bool done() const { return isDone_; }
 
@@ -187,8 +195,8 @@ class Iterator : public IteratorTraits {
 
   virtual void reset() { isDone_ = false; }
 
-  virtual const IteratorVector& children() const {
-    static const IteratorVector kEmptyVec;
+  virtual const IteratorVector<T>& children() const {
+    static const IteratorVector<T> kEmptyVec;
     return kEmptyVec;
   }
 
@@ -196,7 +204,7 @@ class Iterator : public IteratorTraits {
   virtual bool doNext() = 0;
   virtual bool doSkipTo(id_t id);
   virtual bool doSkipToPredicate(AttributeNameVec predicate,
-                                 const Item& target);
+                                 const T& target);
   virtual bool doSkip(size_t n);
 
   void setDone() { isDone_ = true; }
@@ -215,7 +223,7 @@ class Iterator : public IteratorTraits {
   }
 
   bool isDone_; // a flag to check if the iterator is done
-  Item key_;
+  T key_;
 
   bool advancedAtleastOnce_;
 
@@ -225,12 +233,18 @@ class Iterator : public IteratorTraits {
 
  private:
   IteratorType iteratorType_;
+
+  friend class boost::iterator_core_access;
+  void increment() { this->next(); }
+  void advance(size_t n) { this->skip(n); }
+  virtual const T& dereference() const { return value(); }
 };
 
 // Iterator with more than one child
-class CompositeIterator: public Iterator {
+template <typename T=Item>
+class CompositeIterator : public Iterator<T> {
 public:
-  explicit CompositeIterator(IteratorVector& iters)
+  explicit CompositeIterator(IteratorVector<T>& iters)
     : iterators_(std::move(iters)) {}
 
   CompositeIterator();
@@ -241,25 +255,27 @@ public:
     return iterators_.size();
   }
 
-  virtual const IteratorVector& children() const override {
+  virtual const IteratorVector<T>& children() const override {
     return iterators_;
   }
 
 protected:
-  IteratorVector iterators_;
-  Item key_;  // Typically copied from the first non-null child
+  IteratorVector<T> iterators_;
+  T key_;  // Typically copied from the first non-null child
 };
 
-struct StdLessComp : public std::less<Iterator *> {
-  bool operator()(const Iterator *i1,
-                  const Iterator *i2) {
+template <typename T=Item>
+struct StdLessComp : public std::less<Iterator<T> *> {
+  bool operator()(const Iterator<T> *i1,
+                  const Iterator<T> *i2) {
     return i1->value() < i2->value();
   }
 };
 
-struct IdLessComp : public std::less<Iterator *> {
-  bool operator() (const Iterator *i1,
-                   const Iterator *i2) {
+template <typename T=Item>
+struct IdLessComp : public std::less<Iterator<T> *> {
+  bool operator() (const Iterator<T> *i1,
+                   const Iterator<T> *i2) {
     return i1->id() < i2->id();
   }
 };

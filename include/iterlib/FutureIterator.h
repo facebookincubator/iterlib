@@ -14,23 +14,23 @@ namespace iterlib {
  * Particularly useful for data source APIs which do not have iterator interface
  * and in tests.
  */
-template <typename T = Item> class FutureIterator : public Iterator {
+template <typename T = Item> class FutureIterator : public Iterator<T> {
  public:
   explicit FutureIterator(folly::Future<std::vector<T>>&& f,
                           Item key = Item::kEmptyItem)
-      : Iterator(IteratorType::FUTURE), idx_(0), fResult_(std::move(f)) {
-    key_ = key;
+      : Iterator<T>(IteratorType::FUTURE), idx_(0), fResult_(std::move(f)) {
+    this->key_ = key;
   }
 
   folly::Future<folly::Unit> prepare() override final {
-    if (prepared_) {
+    if (this->prepared_) {
       return folly::makeFuture();
     }
 
     return fResult_
         .then([this](const std::vector<T>& res) {
           result_ = res;
-          prepared_ = true;
+          this->prepared_ = true;
         })
         .onError([](const std::exception& ex) {
           LOG(ERROR) << "Failed to prepare FutureIterator: " << ex.what();
@@ -38,7 +38,7 @@ template <typename T = Item> class FutureIterator : public Iterator {
         });
   }
 
-  virtual const Item& value() const override {
+  virtual const T& value() const override {
     if (idx_ != 0) {
       return result_[idx_ - 1];
     }
@@ -47,9 +47,9 @@ template <typename T = Item> class FutureIterator : public Iterator {
 
   bool doNext() override final {
     if (idx_ == result_.size()) {
-      setDone();
+      this->setDone();
     }
-    if (done()) {
+    if (this->done()) {
       return false;
     }
     idx_++;

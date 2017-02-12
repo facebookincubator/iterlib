@@ -11,13 +11,14 @@
 namespace iterlib {
 
 // Collect count results starting at startOffset in iter
-class LimitIterator : public WrappedIterator {
+template <typename T=Item>
+class LimitIterator : public WrappedIterator<T> {
  public:
-  LimitIterator(Iterator* iter, size_t count, size_t startOffset)
-      : WrappedIterator(iter), count_(count), startOffset_(startOffset),
+  LimitIterator(Iterator<T>* iter, size_t count, size_t startOffset)
+      : WrappedIterator<T>(iter), count_(count), startOffset_(startOffset),
         firstTime_(true) {}
 
-  std::string cookie() const override { return innerIter_->cookie(); }
+  std::string cookie() const override { return this->innerIter_->cookie(); }
 
   virtual bool orderPreserving() const override { return true; }
 

@@ -7,16 +7,17 @@
 
 namespace iterlib {
 
-class LetIterator : public WrappedIterator {
+template <typename T=Item>
+class LetIterator : public WrappedIterator<T> {
  public:
   explicit LetIterator(Iterator *inner,
                        dynamic newKey,
                        dynamic oldKey)
-      : WrappedIterator(inner)
+      : WrappedIterator<T>(inner)
       , newKey_(std::move(newKey))
       , oldKey_(std::move(oldKey)) {}
 
-  const Item& value() const override {
+  const T& value() const override {
     const auto& item = innerIter_->value();
     auto omap = item.asRenamedMap(oldKey_, newKey_);
     value_.reset();

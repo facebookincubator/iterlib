@@ -11,15 +11,16 @@ namespace iterlib {
 //
 // If the inner iterator has fewer than the
 // requested items, we select all of them.
-class RandomIterator : public WrappedIterator {
+template <typename T=Item>
+class RandomIterator : public WrappedIterator<T> {
 public:
-  RandomIterator(Iterator* iter, int count)
-    : WrappedIterator(iter)
+  RandomIterator(Iterator<T>* iter, int count)
+    : WrappedIterator<T>(iter)
     , count_(count)
     , firstTime_(true){
   }
 
-  virtual const Item& value() const override {
+  virtual const T& value() const override {
     return randomsamples_.back();
   }
 
@@ -31,7 +32,7 @@ private:
   int32_t count_;
   bool firstTime_;
 
-  std::vector<Item> randomsamples_;
+  std::vector<T> randomsamples_;
 };
 
 }

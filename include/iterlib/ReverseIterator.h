@@ -5,14 +5,15 @@
 namespace iterlib {
 
 // reverse the order of the WrappedIterator
-class ReverseIterator : public WrappedIterator {
+template <typename T=Item>
+class ReverseIterator : public WrappedIterator<T> {
 public:
-  explicit ReverseIterator(Iterator* iter)
-    : WrappedIterator(iter)
+  explicit ReverseIterator(Iterator<T>* iter)
+    : WrappedIterator<T>(iter)
     , firstTime_(true){
   }
 
-  virtual const Item& value() const override {
+  virtual const T& value() const override {
     return results_.back();
   }
 
@@ -25,7 +26,7 @@ private:
 
   bool firstTime_;
 
-  std::vector<Item> results_;
+  std::vector<T> results_;
 };
 
 }

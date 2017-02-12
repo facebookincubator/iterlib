@@ -229,6 +229,17 @@ TEST(IteratorTest, SortedMergeIterator) {
   EXPECT_FALSE(it3->next());
 }
 
+TEST(IteratorTest, StdIteratorCompatibility) {
+  int i = 1;
+  auto it1 = std::move(getRange(1, 10));
+  it1->prepare();
+  ++(*it1);
+  while(!it1->done()) {
+    ++(*it1);
+    EXPECT_EQ(i++, (*it1)->get<int64_t>());
+  }
+}
+
 int main(int argc, char* argv[]) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

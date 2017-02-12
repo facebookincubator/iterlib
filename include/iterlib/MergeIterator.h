@@ -12,18 +12,19 @@ namespace iterlib {
 // The actual merge algorithm for children
 // having the same id() is given by
 // dynamic::merge()
-class MergeIterator : public UnionIterator {
+template <typename T=Item>
+class MergeIterator : public UnionIterator<T> {
  public:
-  explicit MergeIterator(IteratorVector& children)
-      : UnionIterator(children) {}
+  explicit MergeIterator(IteratorVector<T>& children)
+      : UnionIterator<T>(children) {}
 
-  virtual const Item& value() const override {
+  virtual const T& value() const override {
     return value_;
   }
 
  protected:
   bool doNext() override {
-    auto ret = UnionIterator::doNext();
+    auto ret = UnionIterator<T>::doNext();
     storeData();
     return ret;
   }

@@ -7,10 +7,11 @@
 
 namespace iterlib {
 
-bool LimitIterator::doNext() {
-  if (count_ <= 0 || done()) {
+template <typename T>
+bool LimitIterator<T>::doNext() {
+  if (count_ <= 0 || this->done()) {
     VLOG(1) << "Limit iterator count reached: " << cookie();
-    setDone();
+    this->setDone();
     return false;
   }
 
@@ -18,13 +19,13 @@ bool LimitIterator::doNext() {
   bool ret;
   if (firstTime_ && startOffset_ > 0) {
     firstTime_ = false;
-    ret = innerIter_->skip(startOffset_ + 1);
+    ret = this->innerIter_->skip(startOffset_ + 1);
   } else {
-    ret = innerIter_->next();
+    ret = this->innerIter_->next();
   }
 
   if (!ret) {
-    setDone();
+    this->setDone();
     return false;
   }
 

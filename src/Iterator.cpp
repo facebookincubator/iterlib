@@ -9,11 +9,13 @@
 
 namespace iterlib {
 
-Iterator::Iterator(IteratorType type)
+template <typename T>
+Iterator<T>::Iterator(IteratorType type)
     : IteratorTraits(), isDone_(false), key_(Item::kEmptyItem),
       advancedAtleastOnce_(false), prepared_(false), iteratorType_(type) {}
 
-bool Iterator::doSkipTo(id_t target) {
+template <typename T>
+bool Iterator<T>::doSkipTo(id_t target) {
   // Ids are sorted in reverse order (larger ids go first)
   while (id() > target && next())
     ;
@@ -21,7 +23,8 @@ bool Iterator::doSkipTo(id_t target) {
   return !done();
 }
 
-bool Iterator::next() {
+template <typename T>
+bool Iterator<T>::next() {
   throwIfUnPrepared();
   auto ret(doNext());
   if (ret) {
@@ -30,7 +33,8 @@ bool Iterator::next() {
   return ret;
 }
 
-bool Iterator::doSkip(size_t n) {
+template <typename T>
+bool Iterator<T>::doSkip(size_t n) {
   while (n > 0 && next()) {
     --n;
   }
@@ -38,8 +42,9 @@ bool Iterator::doSkip(size_t n) {
 }
 
 // Simple base implementation. Not the most optimal.
-bool Iterator::doSkipToPredicate(AttributeNameVec predicate,
-                                 const Item& target) {
+template <typename T>
+bool Iterator<T>::doSkipToPredicate(AttributeNameVec predicate,
+                                 const T& target) {
   if (done()) {
     return false;
   }
@@ -50,8 +55,9 @@ bool Iterator::doSkipToPredicate(AttributeNameVec predicate,
   return !done();
 }
 
-folly::Future<folly::Unit> CompositeIterator::prepare() {
-  if (prepared_) {
+template <typename T>
+folly::Future<folly::Unit> CompositeIterator<T>::prepare() {
+  if (this->prepared_) {
     return folly::makeFuture();
   }
 
@@ -70,7 +76,7 @@ folly::Future<folly::Unit> CompositeIterator::prepare() {
         bool hasFirstAvailable = false;
         for (auto& iter : iterators_) {
           if (!iter || iter->done()) {
-            setDone();
+            this->setDone();
             break;
           }
           if (!hasFirstAvailable) {
@@ -85,7 +91,7 @@ folly::Future<folly::Unit> CompositeIterator::prepare() {
         throw ex;
       })
     .ensure([this]() {
-      prepared_ = true;
+      this->prepared_ = true;
     });
 }
 }

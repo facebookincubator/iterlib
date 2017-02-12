@@ -4,25 +4,26 @@
 
 namespace iterlib {
 
-class DifferenceIterator : public CompositeIterator {
+template <typename T=Item>
+class DifferenceIterator : public CompositeIterator<T> {
 public:
-  DifferenceIterator(IteratorVector& children)
-    : CompositeIterator(children) {
-    DCHECK_EQ(numChildIters(), 2);
+  DifferenceIterator(IteratorVector<T>& children)
+    : CompositeIterator<T>(children) {
+    DCHECK_EQ(this->numChildIters(), 2);
   }
 
   virtual ~DifferenceIterator() {}
 
-  virtual const Item& value() const override {
-    return iterators_.front()->value();
+  virtual const T& value() const override {
+    return this->iterators_.front()->value();
   }
 
-  const std::unique_ptr<Iterator>& getFirstIterator() const {
-    return iterators_.front();
+  const std::unique_ptr<Iterator<T>>& getFirstIterator() const {
+    return this->iterators_.front();
   }
 
-  const std::unique_ptr<Iterator>& getSecondIterator() const {
-    return iterators_.back();
+  const std::unique_ptr<Iterator<T>>& getSecondIterator() const {
+    return this->iterators_.back();
   }
 
 protected:

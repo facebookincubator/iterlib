@@ -2,55 +2,58 @@
 
 namespace iterlib {
 
-bool AndIterator::doNext() {
-  if (done()) {
+template <typename T>
+bool AndIterator<T>::doNext() {
+  if (this->done()) {
     return false;
   }
 
-  Iterator* lastIt = last();
+  auto* lastIt = last();
   // if last iterator is nullptr, directly return null
   if (lastIt == nullptr) {
-    setDone();
+    this->setDone();
     return false;
   }
 
   if (!lastIt->next()) {
-    setDone();
+    this->setDone();
     return false;
   }
 
   return advanceToLast();
 }
 
-bool AndIterator::doSkipTo(id_t id) {
-  if (done()) {
+template <typename T>
+bool AndIterator<T>::doSkipTo(id_t id) {
+  if (this->done()) {
     return false;
   }
 
-  Iterator* lastIt = last();
+  auto* lastIt = last();
   if (!lastIt->skipTo(id)){
-    setDone();
+    this->setDone();
     return false;
   }
   return advanceToLast();
 }
 
-bool AndIterator::advanceToLast() {
-  Iterator* lastIt = last();
-  Iterator* it;
+template <typename T>
+bool AndIterator<T>::advanceToLast() {
+  auto* lastIt = last();
+  Iterator<T>* it;
   size_t i = 0;
 
   // Try to position all iterators on the same doc
   // or return false if not possible
   id_t id;
-  while ((it = iterators_[i].get())->id() >
+  while ((it = this->iterators_[i].get())->id() >
       (id = lastIt->id())) {
     if (!it->skipTo(id)) {
-      setDone();
+      this->setDone();
       return false;
     }
     lastIt = it;
-    if (++i == iterators_.size()) {
+    if (++i == this->iterators_.size()) {
       i = 0;
     }
   }

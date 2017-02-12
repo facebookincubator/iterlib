@@ -20,9 +20,10 @@ enum class FilterType {
   INSET,
 };
 
-class FilterIteratorBase : public WrappedIterator {
+template <typename T=Item>
+class FilterIteratorBase : public WrappedIterator<T> {
  public:
-  explicit FilterIteratorBase(Iterator* iter) : WrappedIterator(iter) {}
+  explicit FilterIteratorBase(Iterator<T>* iter) : WrappedIterator<T>(iter) {}
 
   bool orderPreserving() const override { return true; }
 
@@ -31,13 +32,14 @@ class FilterIteratorBase : public WrappedIterator {
 
   bool doSkipTo(id_t id) override;
 
-  virtual bool match(const Iterator* iter) = 0;
+  virtual bool match(const Iterator<T>* iter) = 0;
 };
 
-class FilterIterator : public FilterIteratorBase {
+template <typename T=Item>
+class FilterIterator : public FilterIteratorBase<T> {
  public:
-  explicit FilterIterator(Iterator* iter)
-      : FilterIteratorBase(iter), firstTime_(true) {}
+  explicit FilterIterator(Iterator<T>* iter)
+      : FilterIteratorBase<T>(iter), firstTime_(true) {}
 
   void setFilter(const std::vector<std::string>& fields,
                  const std::vector<dynamic>& values, FilterType filterType) {
@@ -82,7 +84,7 @@ class FilterIterator : public FilterIteratorBase {
   }
 
  protected:
-  virtual bool match(const Iterator* iter) override;
+  virtual bool match(const Iterator<T>* iter) override;
 
  private:
   // filter information

@@ -4,41 +4,44 @@ namespace iterlib {
 
 using variant::vector_dynamic_t;
 
-bool FilterIteratorBase::doNext() {
-  while (innerIter_->next()) {
+template <typename T>
+bool FilterIteratorBase<T>::doNext() {
+  while (this->innerIter_->next()) {
     try {
-      if (match(innerIter_.get())) {
+      if (match(this->innerIter_.get())) {
         return true;
       }
     } catch (const std::exception& ex) {
-      LOG_EVERY_N(WARNING, 1000) << "match failed on :id : " << innerIter_->id()
+      LOG_EVERY_N(WARNING, 1000) << "match failed on :id : " << this->innerIter_->id()
                                  << " " << ex.what();
     }
   }
-  setDone();
+  this->setDone();
   return false;
 }
 
-bool FilterIteratorBase::doSkipTo(id_t id) {
-  if (!innerIter_->skipTo(id)) {
-    setDone();
+template <typename T>
+bool FilterIteratorBase<T>::doSkipTo(id_t id) {
+  if (!this->innerIter_->skipTo(id)) {
+    this->setDone();
     return false;
   }
-  if (match(innerIter_.get())) {
+  if (match(this->innerIter_.get())) {
     return true;
   }
 
-  while (innerIter_->next()) {
-    if (match(innerIter_.get())) {
+  while (this->innerIter_->next()) {
+    if (match(this->innerIter_.get())) {
       return true;
     }
   }
 
-  setDone();
+  this->setDone();
   return false;
 }
 
-bool FilterIterator::match(const Iterator* iter) {
+template <typename T>
+bool FilterIterator<T>::match(const Iterator<T>* iter) {
   dynamic v;
   auto& values = reinterpret_cast<std::vector<dynamic>&>(
       values_.getNonConstRef<vector_dynamic_t>());

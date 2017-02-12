@@ -4,15 +4,16 @@
 
 namespace iterlib {
 
-class AndIterator: public CompositeIterator {
+template <typename T=Item>
+class AndIterator: public CompositeIterator<T> {
 public:
-  explicit AndIterator(IteratorVector& iters)
-    : CompositeIterator(iters) {}
+  explicit AndIterator(IteratorVector<T>& iters)
+    : CompositeIterator<T>(iters) {}
   AndIterator();
 
-  virtual const Item& key() const override { return last()->key(); }
+  virtual const T& key() const override { return last()->key(); }
 
-  virtual const Item& value() const override { return last()->value(); }
+  virtual const T& value() const override { return last()->value(); }
 
 protected:
   bool advanceToLast();
@@ -20,8 +21,8 @@ protected:
   bool doSkipTo(id_t id) override;
 
 private:
-  inline Iterator* last() const {
-    return iterators_.back().get();
+  inline Iterator<T>* last() const {
+    return this->iterators_.back().get();
   }
 };
 

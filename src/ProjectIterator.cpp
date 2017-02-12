@@ -3,13 +3,15 @@
 
 namespace iterlib {
 
-bool ProjectIterator::doNext() {
-  return innerIter_->next();
+template <typename T>
+bool ProjectIterator<T>::doNext() {
+  return this->innerIter_->next();
 }
 
-const Item& ProjectIterator::value() const {
+template <typename T>
+const T& ProjectIterator<T>::value() const {
   try {
-    const auto& item = innerIter_->value();
+    const auto& item = this->innerIter_->value();
     auto projection = item.asProjectedMap(attrNames_);
     value_.reset();
     value_.setId(item.id());
@@ -23,9 +25,10 @@ const Item& ProjectIterator::value() const {
   }
 }
 
-bool ProjectIterator::doSkipTo(id_t id) {
-  if (!innerIter_->skipTo(id)) {
-    setDone();
+template <typename T>
+bool ProjectIterator<T>::doSkipTo(id_t id) {
+  if (!this->innerIter_->skipTo(id)) {
+    this->setDone();
     return false;
   }
   return true;

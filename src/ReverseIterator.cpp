@@ -2,14 +2,16 @@
 
 namespace iterlib {
 
-void ReverseIterator::load() {
-  while (innerIter_->next()) {
-    results_.emplace_back(innerIter_->value());
+template <typename T>
+void ReverseIterator<T>::load() {
+  while (this->innerIter_->next()) {
+    results_.emplace_back(this->innerIter_->value());
   }
 }
 
-bool ReverseIterator::doNext() {
-  if (done()) {
+template <typename T>
+bool ReverseIterator<T>::doNext() {
+  if (this->done()) {
     return false;
   }
 
@@ -22,7 +24,7 @@ bool ReverseIterator::doNext() {
   }
 
   if (results_.empty()) {
-    setDone();
+    this->setDone();
     return false;
   }
 

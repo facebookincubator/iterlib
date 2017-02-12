@@ -2,16 +2,18 @@
 
 namespace iterlib {
 
-const Item CountIterator::kCountKey{{folly::StringPiece("count")}};
+template <typename T>
+const T CountIterator<T>::kCountKey{{folly::StringPiece("count")}};
 
-bool CountIterator::doNext() {
-  auto count = countValue_.get<int64_t>();
-  if (done() || count > 0) {
+template <typename T>
+bool CountIterator<T>::doNext() {
+  auto count = countValue_.template get<int64_t>();
+  if (this->done() || count > 0) {
     return false;
   }
 
   count = 0;
-  while (innerIter_->next()) {
+  while (this->innerIter_->next()) {
     count++;
   }
   countValue_ = count;

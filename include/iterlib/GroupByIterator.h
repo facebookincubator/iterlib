@@ -6,24 +6,25 @@
 
 namespace iterlib {
 
-class GroupByIterator : public WrappedIterator {
+template <typename T=Item>
+class GroupByIterator : public WrappedIterator<T> {
  public:
-  explicit GroupByIterator(Iterator* iter, AttributeNameVec groupByAttributes)
-      : WrappedIterator(iter), groupByAttributes_(variant::vector_dynamic_t()) {
-    auto& vec = groupByAttributes_.getNonConstRef<variant::vector_dynamic_t>();
+  explicit GroupByIterator(Iterator<T>* iter, AttributeNameVec groupByAttributes)
+      : WrappedIterator<T>(iter), groupByAttributes_(variant::vector_dynamic_t()) {
+    auto& vec = groupByAttributes_.template getNonConstRef<variant::vector_dynamic_t>();
     vec.insert(vec.begin(), std::make_move_iterator(groupByAttributes.begin()),
                std::make_move_iterator(groupByAttributes.end()));
   }
 
-  virtual const Item& key() const override { return iter_->first; }
+  virtual const T& key() const override { return iter_->first; }
 
   // TODO: Incompatible with value() in the parent class. Consider making
-  // vector<Item *> an Item for composability.
-  const std::vector<const Item*>& valueGroup() const {
+  // vector<T *> an Item for composability.
+  const std::vector<const T*>& valueGroup() const {
     return results_.at(iter_->first);
   }
 
-  const Item& value() const override { return Item::kEmptyItem; }
+  const T& value() const override { return Item::kEmptyItem; }
 
  protected:
   // Runs the actual group by algorithm and fill results_ attribute
@@ -37,29 +38,30 @@ class GroupByIterator : public WrappedIterator {
   // valid.
   bool resultsGroupedBy = false;
   // Attributes the iterator is grouping by
-  Item groupByAttributes_;
+  T groupByAttributes_;
 
   // Results of groupBy()
-  using MapType = std::map<Item, std::vector<const Item*>>;
+  using MapType = std::map<T, std::vector<const T*>>;
   MapType results_;
-  MapType::iterator iter_;
+  typename MapType::iterator iter_;
 };
 
 // Similar to GroupByIterator, but returns counts instead of vector<Item *>
 // Expects input to be sorted by groupByAttributes
-class GroupBySortedCountIterator : public WrappedIterator {
+template <typename T=Item>
+class GroupBySortedCountIterator : public WrappedIterator<T> {
  public:
-  explicit GroupBySortedCountIterator(Iterator* iter,
+  explicit GroupBySortedCountIterator(Iterator<T>* iter,
                                       AttributeNameVec groupByAttributes)
-      : WrappedIterator(iter), groupByAttributes_(variant::vector_dynamic_t()) {
-    auto& vec = groupByAttributes_.getNonConstRef<variant::vector_dynamic_t>();
+      : WrappedIterator<T>(iter), groupByAttributes_(variant::vector_dynamic_t()) {
+    auto& vec = groupByAttributes_.template getNonConstRef<variant::vector_dynamic_t>();
     vec.insert(vec.begin(), std::make_move_iterator(groupByAttributes.begin()),
                std::make_move_iterator(groupByAttributes.end()));
   }
 
-  virtual const Item& key() const override { return iter_->first; }
+  virtual const T& key() const override { return iter_->first; }
 
-  const Item& value() const override { return iter_->second; }
+  const T& value() const override { return iter_->second; }
 
  protected:
   // Runs the actual group by algorithm and fill results_ attribute
@@ -73,11 +75,11 @@ class GroupBySortedCountIterator : public WrappedIterator {
   // valid.
   bool resultsGroupedBy = false;
   // Attributes the iterator is grouping by
-  Item groupByAttributes_;
+  T groupByAttributes_;
 
   // Results of groupBy()
-  using MapType = std::map<Item, Item, std::greater<Item>>;
+  using MapType = std::map<T, T, std::greater<T>>;
   MapType results_;
-  MapType::iterator iter_;
+  typename MapType::iterator iter_;
 };
 }

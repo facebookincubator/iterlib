@@ -12,13 +12,14 @@ namespace iterlib {
 // If your inner iterator yields { "foo" : bar }
 // and your nest key is "baz", this iterator will
 // yield: { "baz" : { "foo" : bar } }
-class NestIterator : public WrappedIterator {
+template <typename T=Item>
+class NestIterator : public WrappedIterator<T> {
  public:
-  explicit NestIterator(Iterator *inner, dynamic key)
-      : WrappedIterator(inner)
+  explicit NestIterator(Iterator<T> *inner, dynamic key)
+      : WrappedIterator<T>(inner)
       , key_(std::move(key)) {}
 
-  const Item& value() const override {
+  const T& value() const override {
     return value_;
   }
  protected:

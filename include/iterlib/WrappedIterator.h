@@ -9,20 +9,21 @@
 
 namespace iterlib {
 
-class WrappedIterator : public Iterator {
+template <typename T=Item>
+class WrappedIterator : public Iterator<T> {
  public:
-  explicit WrappedIterator(Iterator* iter)
-      : Iterator(IteratorType::WRAPPED), innerIter_(iter) {}
+  explicit WrappedIterator(Iterator<T>* iter)
+      : Iterator<T>(IteratorType::WRAPPED), innerIter_(iter) {}
 
-  virtual const Item& key() const override { return innerIter_->key(); }
+  virtual const T& key() const override { return innerIter_->key(); }
 
-  virtual const Item& value() const override { return innerIter_->value(); }
+  virtual const T& value() const override { return innerIter_->value(); }
 
   virtual folly::Future<folly::Unit> prepare() override;
 
   virtual bool orderPreserving() const { return false; }
 
  protected:
-  std::unique_ptr<Iterator> innerIter_;
+  std::unique_ptr<Iterator<T>> innerIter_;
 };
 }

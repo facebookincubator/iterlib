@@ -2,54 +2,56 @@
 
 namespace iterlib {
 
-OrIteratorBase::OrIteratorBase(IteratorVector& iters)
-  : CompositeIterator(iters) {
-  for (auto& child : children()) {
+template <typename T>
+OrIteratorBase<T>::OrIteratorBase(IteratorVector<T>& iters)
+  : CompositeIterator<T>(iters) {
+  for (auto& child : this->children()) {
     if (!child) {
       continue;
     }
-    activeChildren_.push_back(child.get());
+    this->activeChildren_.push_back(child.get());
   }
 }
 
-void OrIteratorBase::updateActiveChildren() {
+template <typename T>
+void OrIteratorBase<T>::updateActiveChildren() {
   auto removeIf = std::remove_if(
       activeChildren_.begin(),
       activeChildren_.end(),
-      [](const Iterator* it) { return it->done(); });
-  activeChildren_.erase(removeIf, activeChildren_.end());
+      [](const Iterator<T>* it) { return it->done(); });
+  this->activeChildren_.erase(removeIf, activeChildren_.end());
 }
 
-template <class Comparator>
-OrIterator<Comparator>::OrIterator(IteratorVector& children)
-  : OrIteratorBase(children), firstTime_(true) {}
+template <class Comparator, typename T>
+OrIterator<Comparator, T>::OrIterator(IteratorVector<T>& children)
+  : OrIteratorBase<T>(children), firstTime_(true) {}
 
-template <class Comparator>
-void OrIterator<Comparator>::doFirst() {
+template <class Comparator, typename T>
+void OrIterator<Comparator, T>::doFirst() {
   firstTime_ = false;
   for (auto& child : activeChildren_) {
     if (child->id() == max()) {
       child->next();
     }
   }
-  updateActiveChildren();
+  this->updateActiveChildren();
 
-  if (activeChildren_.empty()) {
-    setDone();
+  if (this->activeChildren_.empty()) {
+    this->setDone();
     return;
   }
   std::make_heap(activeChildren_.begin(), activeChildren_.end(), Comparator());
 }
 
-template <class Comparator>
-bool OrIterator<Comparator>::doNext() {
-  if (done()) {
+template <class Comparator, typename T>
+bool OrIterator<Comparator, T>::doNext() {
+  if (this->done()) {
     return false;
   }
 
-  auto current = id();
+  auto current = this->id();
   if (firstTime_) {
-    doFirst();
+    this->doFirst();
     current = max();
   }
 
@@ -66,27 +68,27 @@ bool OrIterator<Comparator>::doNext() {
     }
   }
   if (activeChildren_.empty()) {
-    setDone();
+    this->setDone();
     return false;
   }
 
   return true;
 }
 
-template <class Comparator>
-bool OrIterator<Comparator>::doSkipTo(id_t id) {
-  if (done()) {
+template <class Comparator, typename T>
+bool OrIterator<Comparator, T>::doSkipTo(id_t id) {
+  if (this->done()) {
     return false;
   }
 
   if (firstTime_) {
-    doFirst();
+    this->doFirst();
   }
 
   while ((!activeChildren_.empty()) &&
-         (((std::is_same<Comparator, IdLessComp>::value) &&
+         (((std::is_same<Comparator, IdLessComp<T>>::value) &&
            (activeChildren_.front()->id() > id)) ||
-          (!(std::is_same<Comparator, IdLessComp>::value) &&
+          (!(std::is_same<Comparator, IdLessComp<T>>::value) &&
            (activeChildren_.front()->id() == id)))) {
     std::pop_heap(activeChildren_.begin(), activeChildren_.end(), Comparator());
     auto iter = activeChildren_.back();
@@ -99,21 +101,23 @@ bool OrIterator<Comparator>::doSkipTo(id_t id) {
   }
 
   if (activeChildren_.empty()) {
-    setDone();
+    this->setDone();
     return false;
   }
 
   return true;
 }
 
-ConcatIterator::ConcatIterator(IteratorVector& children,
-                                   bool dedup)
-  : OrIteratorBase(children)
+template <typename T>
+ConcatIterator<T>::ConcatIterator(IteratorVector<T>& children,
+                                  bool dedup)
+  : OrIteratorBase<T>(children)
   , idx_(0)
   , dedup_(dedup) {}
 
-folly::Future<folly::Unit> ConcatIterator::prepare() {
-  if (prepared_) {
+template <typename T>
+folly::Future<folly::Unit> ConcatIterator<T>::prepare() {
+  if (this->prepared_) {
     return folly::makeFuture();
   }
 
@@ -135,9 +139,9 @@ folly::Future<folly::Unit> ConcatIterator::prepare() {
           }
         }
         if (isDone) {
-          setDone();
+          this->setDone();
         }
-        updateActiveChildren();
+        this->updateActiveChildren();
       })
     .onError([](const std::exception& ex) {
         LOG(ERROR) << "Failed to prepare ConcatIterator's child iters: "
@@ -145,17 +149,18 @@ folly::Future<folly::Unit> ConcatIterator::prepare() {
         throw ex;
       })
     .ensure([this]() {
-      prepared_ = true;
+      this->prepared_ = true;
     });
 }
 
-bool ConcatIterator::doNext() {
-  if (done()) {
+template <typename T>
+bool ConcatIterator<T>::doNext() {
+  if (this->done()) {
     return false;
   }
 
   // advance to next unique id
-  Iterator* iter = activeChildren_[idx_];
+  auto* iter = activeChildren_[idx_];
   do {
     while (!iter->next()) {
       idx_++;
@@ -169,18 +174,18 @@ bool ConcatIterator::doNext() {
   } while (iter != nullptr && isDuplicate(iter->id()));
 
   if (iter == nullptr) {
-    setDone();
+    this->setDone();
     return false;
   }
 
-  key_ = iter->key();
-  results_.insert(id());
+  this->key_ = iter->key();
+  this->results_.insert(this->id());
   return true;
 }
 
 // sorted-merge
-template class OrIterator<StdLessComp>;
+//template class OrIterator<StdLessComp<Item>, Item>;
 // id() based set union
-template class OrIterator<IdLessComp>;
+//template class OrIterator<IdLessComp<Item>, Item>;
 
 }

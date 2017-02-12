@@ -4,8 +4,9 @@
 
 namespace iterlib {
 
-bool RandomIterator::doNext() {
-  if (done()) {
+template <typename T>
+bool RandomIterator<T>::doNext() {
+  if (this->done()) {
     return false;
   }
 
@@ -19,7 +20,7 @@ bool RandomIterator::doNext() {
   }
 
   if (randomsamples_.empty()) {
-    setDone();
+    this->setDone();
     return false;
   }
 
@@ -28,17 +29,18 @@ bool RandomIterator::doNext() {
 }
 
 // reservoir sampling
-void RandomIterator::getRandomSamples() {
+template <typename T>
+void RandomIterator<T>::getRandomSamples() {
   if (count_ <= 0) {
     return;
   }
   // read count_
   int32_t index = 0;
   while (index < count_ ) {
-    if (!innerIter_->next()) {
+    if (!this->innerIter_->next()) {
       return;
     }
-    randomsamples_.push_back(innerIter_->value());
+    randomsamples_.push_back(this->innerIter_->value());
     index++;
   }
 
@@ -49,12 +51,12 @@ void RandomIterator::getRandomSamples() {
     ++skip;
     int x = folly::Random::rand32(index+1);
     if ( x < count_) {
-      if (!innerIter_->skip(skip)) {
+      if (!this->innerIter_->skip(skip)) {
         return;
       }
       // swap results
       skip = 0;
-      randomsamples_[x] = innerIter_->value();
+      randomsamples_[x] = this->innerIter_->value();
     }
     ++index;
   }

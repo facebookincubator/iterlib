@@ -35,3 +35,4 @@ class MergeIterator : public UnionIterator<T> {
 };
 
 }
+#include "iterlib/MergeIterator-inl.h"

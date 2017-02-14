@@ -93,3 +93,5 @@ class OrderByIterator : public WrappedIterator<T> {
   bool first_;
 };
 }
+
+#include "iterlib/OrderByIterator-inl.h"

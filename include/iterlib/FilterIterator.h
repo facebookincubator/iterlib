@@ -96,3 +96,5 @@ class FilterIterator : public FilterIteratorBase<T> {
   FilterType filterType_;
 };
 }
+
+#include "iterlib/FilterIterator-inl.h"

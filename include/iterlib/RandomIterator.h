@@ -36,3 +36,5 @@ private:
 };
 
 }
+
+#include "iterlib/RandomIterator-inl.h"

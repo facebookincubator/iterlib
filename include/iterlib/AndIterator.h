@@ -27,3 +27,5 @@ private:
 };
 
 }
+
+#include "iterlib/AndIterator-inl.h"

@@ -33,3 +33,4 @@ protected:
 };
 
 }
+#include "iterlib/DifferenceIterator-inl.h"

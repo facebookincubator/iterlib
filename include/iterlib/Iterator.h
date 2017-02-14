@@ -128,7 +128,9 @@ class Iterator
 
   virtual const T& key() const { return key_; }
 
-  virtual const T& value() const = 0;
+  virtual const T& value() const {
+    throw std::logic_error("abstract method");
+  }
 
   virtual bool done() const { return isDone_; }
 
@@ -201,7 +203,10 @@ class Iterator
   }
 
  protected:
-  virtual bool doNext() = 0;
+  virtual bool doNext() {
+    throw std::logic_error("abstract method");
+  }
+
   virtual bool doSkipTo(id_t id);
   virtual bool doSkipToPredicate(AttributeNameVec predicate,
                                  const T& target);
@@ -280,3 +285,5 @@ struct IdLessComp : public std::less<Iterator<T> *> {
   }
 };
 }
+
+#include "iterlib/Iterator-inl.h"

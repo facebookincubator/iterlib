@@ -31,3 +31,5 @@ private:
 };
 
 }
+
+#include "iterlib/CountIterator-inl.h"

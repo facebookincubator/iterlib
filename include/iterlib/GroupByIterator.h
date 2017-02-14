@@ -83,3 +83,5 @@ class GroupBySortedCountIterator : public WrappedIterator<T> {
   typename MapType::iterator iter_;
 };
 }
+
+#include "iterlib/GroupByIterator-inl.h"

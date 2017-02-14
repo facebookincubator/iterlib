@@ -32,3 +32,4 @@ class LimitIterator : public WrappedIterator<T> {
   bool firstTime_;
 };
 }
+#include "iterlib/LimitIterator-inl.h"

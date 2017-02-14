@@ -92,3 +92,5 @@ template <typename T=Item>
 using SortedMergeIterator = OrIterator<StdLessComp<T>, T>;
 
 }
+
+#include "iterlib/OrIterator-inl.h"

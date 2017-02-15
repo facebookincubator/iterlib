@@ -43,6 +43,7 @@
 #include "iterlib/Item.h"
 
 namespace iterlib {
+namespace detail {
 
 enum class IteratorType : int32_t {
   NONE = 0,
@@ -284,6 +285,11 @@ struct IdLessComp : public std::less<Iterator<T> *> {
     return i1->id() < i2->id();
   }
 };
+}
+
+using Iterator = detail::Iterator<Item>;
+using IteratorVector = detail::IteratorVector<Item>;
+using detail::AttributeNameVec;
 }
 
 #include "iterlib/Iterator-inl.h"

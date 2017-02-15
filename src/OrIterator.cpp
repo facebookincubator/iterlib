@@ -1,6 +1,7 @@
 #include "iterlib/OrIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 // sorted-merge
 template class OrIterator<StdLessComp<Item>, Item>;
@@ -9,4 +10,5 @@ template class OrIterator<IdLessComp<Item>, Item>;
 
 template class ConcatIterator<Item>;
 
+}
 }

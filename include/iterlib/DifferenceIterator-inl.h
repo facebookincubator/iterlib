@@ -6,6 +6,7 @@
 #pragma once
 
 namespace iterlib {
+namespace detail {
 
 template <typename T>
 bool DifferenceIterator<T>::advanceToNextDifference() {
@@ -50,4 +51,5 @@ bool DifferenceIterator<T>::doSkipTo(id_t id) {
   return advanceToNextDifference();
 }
 
+}
 }

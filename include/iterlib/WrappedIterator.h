@@ -8,6 +8,7 @@
 #include "iterlib/Iterator.h"
 
 namespace iterlib {
+namespace detail {
 
 template <typename T=Item>
 class WrappedIterator : public Iterator<T> {
@@ -26,4 +27,8 @@ class WrappedIterator : public Iterator<T> {
  protected:
   std::unique_ptr<Iterator<T>> innerIter_;
 };
+
 }
+}
+
+#include "iterlib/WrappedIterator-inl.h"

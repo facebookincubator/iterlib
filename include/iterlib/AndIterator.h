@@ -3,6 +3,7 @@
 #include "iterlib/Iterator.h"
 
 namespace iterlib {
+namespace detail {
 
 template <typename T=Item>
 class AndIterator: public CompositeIterator<T> {
@@ -25,6 +26,10 @@ private:
     return this->iterators_.back().get();
   }
 };
+
+}
+
+using AndIterator = detail::AndIterator<Item>;
 
 }
 

@@ -6,6 +6,7 @@
 #pragma once
 
 namespace iterlib {
+namespace detail {
 
 template <typename T>
 void ReverseIterator<T>::load() {
@@ -36,4 +37,5 @@ bool ReverseIterator<T>::doNext() {
   return true;
 }
 
+}
 }

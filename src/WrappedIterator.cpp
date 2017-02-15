@@ -6,5 +6,9 @@
 #include "iterlib/WrappedIterator.h"
 
 namespace iterlib {
+namespace detail {
 
+template class detail::WrappedIterator<Item>;
+
+}
 }

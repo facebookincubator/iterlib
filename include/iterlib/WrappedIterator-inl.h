@@ -6,6 +6,7 @@
 #pragma once
 
 namespace iterlib {
+namespace detail {
 
 template <typename T>
 folly::Future<folly::Unit> WrappedIterator<T>::prepare() {
@@ -29,4 +30,5 @@ folly::Future<folly::Unit> WrappedIterator<T>::prepare() {
   return folly::makeFuture();
 }
 
+}
 }

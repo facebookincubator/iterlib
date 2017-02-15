@@ -3,6 +3,7 @@
 #include "iterlib/Iterator.h"
 
 namespace iterlib {
+namespace detail {
 
 template <typename T=Item>
 class DifferenceIterator : public CompositeIterator<T> {
@@ -31,6 +32,10 @@ protected:
   bool doNext() override;
   bool doSkipTo(id_t id) override;
 };
+
+}
+
+using DifferenceIterator = detail::DifferenceIterator<Item>;
 
 }
 #include "iterlib/DifferenceIterator-inl.h"

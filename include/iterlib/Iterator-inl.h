@@ -6,6 +6,7 @@
 #pragma once
 
 namespace iterlib {
+namespace detail {
 
 template <typename T>
 Iterator<T>::Iterator(IteratorType type)
@@ -93,4 +94,5 @@ folly::Future<folly::Unit> CompositeIterator<T>::prepare() {
     });
 }
 
+}
 }

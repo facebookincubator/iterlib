@@ -6,6 +6,7 @@
 #pragma once
 
 namespace iterlib {
+namespace detail {
 
 template <typename T>
 bool AndIterator<T>::doNext() {
@@ -65,4 +66,5 @@ bool AndIterator<T>::advanceToLast() {
   return true;
 }
 
+}
 }

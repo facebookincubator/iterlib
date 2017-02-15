@@ -8,6 +8,7 @@
 #include "iterlib/OrderByIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 template <typename T>
 bool OrderByIterator<T>::Comparator::
@@ -17,5 +18,7 @@ operator()(const std::pair<const T*, int>& v1,
       partialCompare(*v1.first, *v2.first, columns_, isColumnDescending_);
   return cmp == PartialOrder::LT ||
          (cmp == PartialOrder::EQ && v1.second > v2.second);
+}
+
 }
 }

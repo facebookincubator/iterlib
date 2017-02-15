@@ -74,6 +74,7 @@ class ItemOptimized : public Item {
   using Item::get;
   using Item::getRef;
   using Item::getNonConstRef;
+  static const ItemOptimized kEmptyItem;
 
   ItemOptimized() : Item(), id_(kUninitializedId), ts_(0) {}
 

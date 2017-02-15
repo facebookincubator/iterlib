@@ -6,6 +6,7 @@
 #pragma once
 
 namespace iterlib {
+namespace detail {
 
 template <typename T>
 bool ProjectIterator<T>::doNext() {
@@ -38,4 +39,5 @@ bool ProjectIterator<T>::doSkipTo(id_t id) {
   return true;
 }
 
+}
 }

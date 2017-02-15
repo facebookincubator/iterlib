@@ -6,7 +6,9 @@
 #include "iterlib/Iterator.h"
 
 namespace iterlib {
+namespace detail {
 
-template class Iterator<Item>;
+template class detail::Iterator<Item>;
 
+}
 }

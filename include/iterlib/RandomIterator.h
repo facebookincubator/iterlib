@@ -3,6 +3,7 @@
 #include "iterlib/WrappedIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 // Get random results from the inner Iterator
 //
@@ -34,6 +35,10 @@ private:
 
   std::vector<T> randomsamples_;
 };
+
+}
+
+using RandomIterator = detail::RandomIterator<Item>;
 
 }
 

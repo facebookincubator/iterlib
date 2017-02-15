@@ -10,6 +10,8 @@ const dynamic kEmptyItemInternal{variant::unordered_map_t{
 }
 
 const Item Item::kEmptyItem{kEmptyItemInternal};
+const ItemOptimized ItemOptimized::kEmptyItem{
+  std::numeric_limits<id_t>::max(), 0, kEmptyItemInternal};
 
 // Returns the result of v1[i] < v2[i]
 // The comparison is inverted if isColumnDescending[i] is false

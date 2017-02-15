@@ -9,6 +9,7 @@
 #include "iterlib/WrappedIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 // Collect count results starting at startOffset in iter
 template <typename T=Item>
@@ -31,5 +32,10 @@ class LimitIterator : public WrappedIterator<T> {
 
   bool firstTime_;
 };
+
+}
+
+using LimitIterator = detail::LimitIterator<Item>;
+
 }
 #include "iterlib/LimitIterator-inl.h"

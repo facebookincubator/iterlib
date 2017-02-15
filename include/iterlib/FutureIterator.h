@@ -7,6 +7,7 @@
 #include "iterlib/Iterator.h"
 
 namespace iterlib {
+namespace detail {
 
 /**
  * Provides Iterator interface for arbitrary future which returns
@@ -14,11 +15,11 @@ namespace iterlib {
  * Particularly useful for data source APIs which do not have iterator interface
  * and in tests.
  */
-template <typename T = Item> class FutureIterator : public Iterator<T> {
+template <typename T = Item> class FutureIterator : public iterlib::Iterator {
  public:
   explicit FutureIterator(folly::Future<std::vector<T>>&& f,
                           Item key = Item::kEmptyItem)
-      : Iterator<T>(IteratorType::FUTURE), idx_(0), fResult_(std::move(f)) {
+      : iterlib::Iterator(IteratorType::FUTURE), idx_(0), fResult_(std::move(f)) {
     this->key_ = key;
   }
 
@@ -42,7 +43,7 @@ template <typename T = Item> class FutureIterator : public Iterator<T> {
     if (idx_ != 0) {
       return result_[idx_ - 1];
     }
-    return Item::kEmptyItem;
+    return T::kEmptyItem;
   }
 
   bool doNext() override final {
@@ -74,4 +75,9 @@ template <typename T = Item> class FutureIterator : public Iterator<T> {
 
   folly::Future<std::vector<T>> fResult_;
 };
+
+}
+
+// Unlike other Iterators, tests already expect a templated FutureIterator
+using detail::FutureIterator;
 }

@@ -5,6 +5,7 @@
 #include "iterlib/WrappedIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 template <typename T=Item>
 class OrderByIterator : public WrappedIterator<T> {
@@ -92,6 +93,10 @@ class OrderByIterator : public WrappedIterator<T> {
   std::vector<bool> isColumnDescending_;
   bool first_;
 };
+
 }
 
+using OrderByIterator = detail::OrderByIterator<Item>;
+
+}
 #include "iterlib/OrderByIterator-inl.h"

@@ -6,7 +6,9 @@
 #include "iterlib/LimitIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 template class LimitIterator<Item>;
 
+}
 }

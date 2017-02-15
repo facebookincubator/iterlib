@@ -6,6 +6,7 @@
 #include "iterlib/WrappedIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 // Nest the inner iterator inside the given key
 //
@@ -25,13 +26,13 @@ class NestIterator : public WrappedIterator<T> {
  protected:
 
   bool doNext() override {
-    auto ret = innerIter_->next();
+    auto ret = this->innerIter_->next();
     storeData();
     return ret;
   }
 
   void storeData() {
-    const auto& inner = innerIter_->value();
+    const auto& inner = this->innerIter_->value();
     const dynamic& val = inner;
     value_ = variant::ordered_map_t{{ key_, val }};
     value_.setId(inner.id());
@@ -41,5 +42,9 @@ class NestIterator : public WrappedIterator<T> {
   dynamic key_;
   ItemOptimized value_;
 };
+
+}
+
+using NestIterator = detail::NestIterator<Item>;
 
 }

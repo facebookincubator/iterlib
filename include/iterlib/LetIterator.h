@@ -6,11 +6,12 @@
 #include "iterlib/WrappedIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 template <typename T=Item>
 class LetIterator : public WrappedIterator<T> {
  public:
-  explicit LetIterator(Iterator *inner,
+  explicit LetIterator(Iterator<T> *inner,
                        dynamic newKey,
                        dynamic oldKey)
       : WrappedIterator<T>(inner)
@@ -18,7 +19,7 @@ class LetIterator : public WrappedIterator<T> {
       , oldKey_(std::move(oldKey)) {}
 
   const T& value() const override {
-    const auto& item = innerIter_->value();
+    const auto& item = this->innerIter_->value();
     auto omap = item.asRenamedMap(oldKey_, newKey_);
     value_.reset();
     value_.setId(item.id());
@@ -29,7 +30,7 @@ class LetIterator : public WrappedIterator<T> {
   }
 
   bool doNext() override {
-    return innerIter_->next();
+    return this->innerIter_->next();
   }
 
   virtual bool orderPreserving() const { return true; }
@@ -44,5 +45,9 @@ class LetIterator : public WrappedIterator<T> {
   // a copy?
   mutable ItemOptimized value_;
 };
+
+}
+
+using LetIterator = detail::LetIterator<Item>;
 
 }

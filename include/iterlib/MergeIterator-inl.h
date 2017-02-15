@@ -6,6 +6,7 @@
 #pragma once
 
 namespace iterlib {
+namespace detail {
 
 template <typename T>
 void MergeIterator<T>::storeData() {
@@ -18,4 +19,5 @@ void MergeIterator<T>::storeData() {
   }
 }
 
+}
 }

@@ -20,6 +20,8 @@ enum class FilterType {
   INSET,
 };
 
+namespace detail {
+
 template <typename T=Item>
 class FilterIteratorBase : public WrappedIterator<T> {
  public:
@@ -95,6 +97,11 @@ class FilterIterator : public FilterIteratorBase<T> {
 
   FilterType filterType_;
 };
+
+}
+
+using FilterIterator = detail::FilterIterator<Item>;
+
 }
 
 #include "iterlib/FilterIterator-inl.h"

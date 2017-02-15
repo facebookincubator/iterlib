@@ -5,6 +5,7 @@
 #include "iterlib/WrappedIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 template <typename T=Item>
 class GroupByIterator : public WrappedIterator<T> {
@@ -82,6 +83,12 @@ class GroupBySortedCountIterator : public WrappedIterator<T> {
   MapType results_;
   typename MapType::iterator iter_;
 };
+
+}
+
+using GroupByIterator = detail::GroupByIterator<Item>;
+using GroupBySortedCountIterator = detail::GroupBySortedCountIterator<Item>;
+
 }
 
 #include "iterlib/GroupByIterator-inl.h"

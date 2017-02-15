@@ -8,6 +8,7 @@
 #include <folly/Random.h>
 
 namespace iterlib {
+namespace detail {
 
 template <typename T>
 bool RandomIterator<T>::doNext() {
@@ -68,4 +69,5 @@ void RandomIterator<T>::getRandomSamples() {
 
 };
 
+}
 }

@@ -5,6 +5,7 @@
 #include "iterlib/OrIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 // This performs an id() based merge of
 // items among the child iterators
@@ -33,6 +34,10 @@ class MergeIterator : public UnionIterator<T> {
 
   ItemOptimized value_;
 };
+
+}
+
+using MergeIterator = detail::MergeIterator<Item>;
 
 }
 #include "iterlib/MergeIterator-inl.h"

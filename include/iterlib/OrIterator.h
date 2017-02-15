@@ -2,6 +2,7 @@
 #include "iterlib/Iterator.h"
 
 namespace iterlib {
+namespace detail {
 
 template <typename T=Item>
 class OrIteratorBase : public CompositeIterator<T> {
@@ -93,4 +94,9 @@ using SortedMergeIterator = OrIterator<StdLessComp<T>, T>;
 
 }
 
+using UnionIterator = detail::UnionIterator<Item>;
+using SortedMergeIterator = detail::SortedMergeIterator<Item>;
+using ConcatIterator = detail::ConcatIterator<Item>;
+
+}
 #include "iterlib/OrIterator-inl.h"

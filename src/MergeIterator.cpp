@@ -2,7 +2,9 @@
 #include "iterlib/MergeIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 template class MergeIterator<Item>;
 
+}
 }

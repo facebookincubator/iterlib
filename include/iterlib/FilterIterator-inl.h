@@ -6,6 +6,7 @@
 #pragma once
 
 namespace iterlib {
+namespace detail {
 
 using variant::vector_dynamic_t;
 
@@ -120,5 +121,7 @@ bool FilterIterator<T>::match(const Iterator<T>* iter) {
   default:
     return false;
   }
+}
+
 }
 }

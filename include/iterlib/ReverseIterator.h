@@ -3,6 +3,7 @@
 #include "iterlib/WrappedIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 // reverse the order of the WrappedIterator
 template <typename T=Item>
@@ -28,6 +29,10 @@ private:
 
   std::vector<T> results_;
 };
+
+}
+
+using ReverseIterator = detail::ReverseIterator<Item>;
 
 }
 

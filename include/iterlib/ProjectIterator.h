@@ -4,6 +4,7 @@
 #include "iterlib/WrappedIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 /**
  * Project takes an ordered set of attribute names (AttributeNameVec) and
@@ -34,6 +35,10 @@ private:
   AttributeNameVec attrNames_;
   mutable ItemOptimized value_;
 };
+
+}
+
+using ProjectIterator = detail::ProjectIterator<Item>;
 
 }
 

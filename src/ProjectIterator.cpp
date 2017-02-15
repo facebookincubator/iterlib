@@ -2,7 +2,9 @@
 #include "iterlib/ProjectIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 template class ProjectIterator<Item>;
 
+}
 }

@@ -11,6 +11,7 @@
 #include "iterlib/Iterator.h"
 
 namespace iterlib {
+namespace detail {
 
 inline folly::StringPiece sliceToStringPiece(const rocksdb::Slice s) {
   return {s.data(), s.size()};
@@ -63,4 +64,8 @@ class RocksDBIterator : public Iterator<T> {
   std::unique_ptr<rocksdb::Iterator> iter_;
   bool firstTime_ = true;
 };
+}
+
+using RocksDBIterator = detail::RocksDBIterator<Item>;
+
 }

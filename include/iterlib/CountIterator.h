@@ -3,6 +3,7 @@
 #include "iterlib/WrappedIterator.h"
 
 namespace iterlib {
+namespace detail {
 
 // count the number of items in iter
 template <typename T=Item>
@@ -29,6 +30,10 @@ protected:
 private:
   mutable T countValue_;
 };
+
+}
+
+using CountIterator = detail::CountIterator<Item>;
 
 }
 

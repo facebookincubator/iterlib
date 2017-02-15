@@ -6,6 +6,7 @@
 #pragma once
 
 namespace iterlib {
+namespace detail {
 
 template <typename T>
 bool LimitIterator<T>::doNext() {
@@ -31,5 +32,7 @@ bool LimitIterator<T>::doNext() {
 
   count_--;
   return ret;
+}
+
 }
 }

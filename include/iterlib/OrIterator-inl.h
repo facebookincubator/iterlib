@@ -6,6 +6,7 @@
 #pragma once
 
 namespace iterlib {
+namespace detail {
 
 template <typename T>
 OrIteratorBase<T>::OrIteratorBase(IteratorVector<T>& iters)
@@ -188,9 +189,5 @@ bool ConcatIterator<T>::doNext() {
   return true;
 }
 
-// sorted-merge
-//template class OrIterator<StdLessComp<Item>, Item>;
-// id() based set union
-//template class OrIterator<IdLessComp<Item>, Item>;
-
+}
 }

@@ -9,6 +9,7 @@
 import collections
 from item import Item
 
+
 def is_leaf(d):
     has_child = False
     for k, v in d.items():
@@ -18,6 +19,7 @@ def is_leaf(d):
                     has_child = True
                     break
     return not has_child
+
 
 def _walk(parent, key, d):
     if isinstance(d, dict):
@@ -30,7 +32,7 @@ def _walk(parent, key, d):
                 else:
                     parent = d
                 if not isinstance(v, collections.Iterable) or \
-                       isinstance(v, str):
+                        isinstance(v, str):
                     continue
                 for g in _walk(parent, k, v):
                     yield g
@@ -43,6 +45,7 @@ def _walk(parent, key, d):
     else:
         yield (parent, key, d)
 
+
 def walk(d):
     """Walk the dictionary, yielding tuples of (root, parent, key, leaf).
 
@@ -52,11 +55,13 @@ def walk(d):
     for parent, key, leaf in _walk({}, None, d):
         yield (d, parent, key, leaf)
 
+
 def leaf_it(d):
     """Similar to walk above, but doesn't provide reference to
        parent"""
     for parent, key, y in _walk({}, None, d):
         yield y
+
 
 def _path_walk(path, d):
     if isinstance(d, dict):
@@ -75,18 +80,21 @@ def _path_walk(path, d):
     else:
         yield (path, d)
 
+
 def dict_to_item(d):
     if isinstance(d, dict):
-        return Item({ k : dict_to_item(v) for k,v in d.items()})
+        return Item({k: dict_to_item(v) for k, v in d.items()})
     elif isinstance(d, collections.Iterable) and not isinstance(d, str):
         return list(map(dict_to_item, d))
     else:
         return d
 
+
 def path_it(d):
     """Similar to leaf_it above, but yields a path as well"""
     for p in _path_walk([], d):
         yield p
+
 
 def materialize_walk(d):
     """Returns a materialized dictionary expanding
@@ -118,16 +126,17 @@ def materialize_walk(d):
     else:
         return d
 
+
 def print_types_walk(d):
     """Walk the lazy dict and print types."""
     if isinstance(d, dict):
         out = Item({})
         for k, v in d.items():
-            print("{ %s : " % k, end="");
+            print("{ %s : " % k, end="")
             print_types_walk(v)
             print("}")
     elif isinstance(d, collections.Iterable):
         print(type(d), end="")
-        #TODO: descend into nested iterators such as reverse+limit
+        # TODO: descend into nested iterators such as reverse+limit
     else:
         print(type(d), end="")

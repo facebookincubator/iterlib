@@ -20,12 +20,13 @@
 
 # https://github.com/mbr/visitor
 
+
 class Visitor(object):
     """Base class for visitors."""
 
     def visit(self, node):
         """Visit a node.
-           
+
            Input is assumed to be validated json against a schema.
            Dispatch to a visit_foo if the first element in the json
            is foo.

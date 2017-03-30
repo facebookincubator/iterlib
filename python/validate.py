@@ -9,6 +9,7 @@ import sexp
 
 schema = json.loads(open("queries.json").read())
 
+
 def validate(exp):
     """ validate if a s-expression is a valid query"""
     s = sexp.parse(exp)
@@ -17,6 +18,8 @@ def validate(exp):
     return j
 
 # todo: wrap these in a test suite
+
+
 def tests():
     validate("(orderby (a  b) (1 2 3))")
     validate("(orderby (a  (b desc)) (1 2 3))")
@@ -47,6 +50,6 @@ def tests():
     except jsonschema.exceptions.ValidationError:
         pass
 
-#tests()
+# tests()
 if __name__ == '__main__':
     validate(sys.argv[1])

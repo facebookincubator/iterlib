@@ -30,6 +30,7 @@ from string import whitespace
 
 atom_end = set('()"\'') | set(whitespace)
 
+
 def close_last(item):
     if (type(item[-1]) == tuple):
         if len(item[-1]) == 1:
@@ -37,11 +38,12 @@ def close_last(item):
     elif (type(item[-1]) == list):
         close_last(item[-1])
 
+
 def _parse(sexp):
     stack, i, length = [[]], 0, len(sexp)
     while i < length:
         c = sexp[i]
-        cn = sexp[i+1] if (i+1 < length) else None
+        cn = sexp[i + 1] if (i + 1 < length) else None
         escaped = False
         if (c == '\\' and cn == '"'):
             c = cn
@@ -91,6 +93,7 @@ def _parse(sexp):
         i += 1
     return stack.pop()
 
+
 def _thread_last(sexp):
     """Handles thread last macro similar to clojure.
 
@@ -109,9 +112,11 @@ def _thread_last(sexp):
             ret = e
     return ret
 
+
 def parse(sexp):
     s = _parse(sexp)[0]
     return _thread_last(s)
+
 
 class Tests(unittest.TestCase):
 
@@ -120,7 +125,8 @@ class Tests(unittest.TestCase):
 
     def test_escape(self):
         self.assertEqual(parse("(a (\"b foo\" c))"), ['a', ['b foo', 'c']])
-        self.assertEqual(parse("(a (\"b \\\" foo\" c))"), ['a', ['b " foo', 'c']])
+        self.assertEqual(parse("(a (\"b \\\" foo\" c))"),
+                         ['a', ['b " foo', 'c']])
 
     def test_quote(self):
         #self.assertEqual(parse("(a (b 'c))"), ['a', ['b', ['quote', 'c']]])
@@ -130,7 +136,8 @@ class Tests(unittest.TestCase):
         self.assertEqual(parse("(->> a b)"), ['b', 'a'])
         self.assertEqual(parse("(->> a b c)"), ['c', ['b', 'a']])
         self.assertEqual(parse("(->> (a) (b) (c))"), ['c', ['b', ['a']]])
-        self.assertEqual(parse("(->> (a) (b c) (d))"), ['d', ['b', 'c', ['a']]])
+        self.assertEqual(parse("(->> (a) (b c) (d))"),
+                         ['d', ['b', 'c', ['a']]])
         self.assertEqual(parse("(->> a (b) (c) (->> d e f))"),
                          ['f', ['e', 'd'], ['c', ['b', 'a']]])
 

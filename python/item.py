@@ -4,15 +4,18 @@ from collections import OrderedDict
 
 import json
 
+
 def pprint_json(d):
     """Output valid json and pretty print"""
     s = json.dumps(d, indent=4, sort_keys=True)
     print(s)
 
+
 class Item(OrderedDict):
     """Like an OrderedDict, but treats :id as special for
        equality purposes and hashable (so you can create sets).
-    """ 
+    """
+
     def __lt__(self, other):
         return self[":id"] < other[":id"]
 

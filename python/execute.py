@@ -13,12 +13,12 @@ import validate
 import visitor
 
 from contextlib import ExitStack
-from functools import reduce
 from item import Item
+from typing import Callable, Iterable, List
 from walk import dict_to_item, leaf_it, materialize_walk, path_it, walk
 
 
-def reservoir_sample(it, k):
+def reservoir_sample(it: Iterable, k: int) -> Iterable:
     '''https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_R'''
     it = iter(it)
     result = []
@@ -32,22 +32,22 @@ def reservoir_sample(it, k):
     return result
 
 
-def projection(keys):
+def projection(keys: List[str]) -> Callable[[Iterable], Iterable]:
     """Return a lambda that filters only the selected keys"""
     return lambda xlist: [{k: item[k] for k in keys} for item in xlist]
 
 
-def project_item(keys):
+def project_item(keys: List[str]) -> Callable[[Item], Iterable]:
     """Like projection, but operates on a single item instead of a list"""
     return lambda x: {k: x[k] for k in keys}
 
 
-def rename(env):
+def rename(env: dict) -> Callable[[Item], Iterable]:
     """Return a lambda that adds some aliases specified by env"""
     return lambda x: x.update({k: x[v] for k, v in env}) or x
 
 
-def projection_cmp(keys):
+def projection_cmp(keys: List[str]) -> Callable[[Item], Item]:
     return lambda x: [x[k] for k in keys]
 
 
@@ -56,16 +56,16 @@ def flatten(iterable):
     return itertools.chain.from_iterable(iterable)
 
 
-def count_it(iter):
+def count_it(iter: Iterable) -> int:
     return sum(1 for _ in iter)
 
 
-def intersect(its):
+def intersect(its: List[Iterable]) -> Iterable:
     source = heapq.merge(*its, reverse=True)
     return iter([k for k, g in itertools.groupby(source, project_item([":id"])) if count_it(g) == len(its)])
 
 
-def union(its):
+def union(its: List[Iterable]) -> Iterable:
     source = heapq.merge(*its, reverse=True)
     return iter([k for k, g in itertools.groupby(source, project_item([":id"]))])
 
@@ -81,7 +81,7 @@ def reduce(function, iterable, initializer=None):
     return value
 
 
-def merge_dicts(x, y):
+def merge_dicts(x: dict, y: dict) -> dict:
     common_keys = set(x.keys()) & set(y.keys())
     z = {k: operator.add(x[k], y[k]) for k in common_keys}
     z = dict(list(x.items()) + list(y.items()) + list(z.items()))
@@ -102,7 +102,7 @@ def merge(its):
 # (3 2 1) instead of  [{':id': 3}, {':id': 2}, {':id': 1}]
 
 
-def dictify(id_list):
+def dictify(id_list: Iterable[int]) -> Iterable[Item]:
     for x in id_list:
         yield Item({":id": x})
 
@@ -111,7 +111,7 @@ def ldictify(id_list):
     return list(dictify(id_list))
 
 
-def undictify(dict_it):
+def undictify(dict_it: Iterable[Item]) -> Iterable[int]:
     for i in dict_it:
         yield i[":id"]
 

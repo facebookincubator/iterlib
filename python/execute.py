@@ -13,6 +13,7 @@ import validate
 import visitor
 
 from contextlib import ExitStack
+from functools import partial
 from item import Item
 from typing import Callable, Iterable, List
 from walk import dict_to_item, leaf_it, materialize_walk, path_it, walk
@@ -116,6 +117,10 @@ def undictify(dict_it: Iterable[Item]) -> Iterable[int]:
         yield i[":id"]
 
 
+def apply_func(x, mapFunc):
+    return {k: mapFunc(v) for k, v in x.items()}
+
+
 class AbstractSyntaxTreeVisitor(visitor.Visitor):
 
     def __init__(self, id1s):
@@ -124,6 +129,8 @@ class AbstractSyntaxTreeVisitor(visitor.Visitor):
         self.parent_key = None
         if id1s:
             self.root = {id1[":id"]: {} for id1 in id1s}
+        else:
+            self.root = Item({None:  self.iter})
         self.id1s = id1s
 
     def batch(func):
@@ -138,9 +145,8 @@ class AbstractSyntaxTreeVisitor(visitor.Visitor):
                 self.parent_iter and self.parent_key are used to
                 quickly locate the parents of leaf nodes.
             """
-            if not self.parent_iter:
-                self.iter = map(lambda x: {k: self.mapFunc(v) for k, v in x.items()},
-                                self.iter)
+            if not self.parent_iter or not self.parent_key:
+                self.iter = map(partial(apply_func, mapFunc=self.mapFunc), self.iter)
                 self.root = self.iter
                 return
             # we need to be able to iterate over self.parent_iter multiple
@@ -306,27 +312,39 @@ class AbstractSyntaxTreeVisitor(visitor.Visitor):
     def visit_join(self, query):
         raise "Not implemented"
 
+    @staticmethod
+    def _visit_driver_obj(it, key, driver):
+        with ExitStack() as stack:
+            for i in it:
+                id_i = i[":id"]
+                res = driver(key, id_i)
+                for k, v in res.items():
+                    stack.callback(i.__setitem__, k, v)
+        return it
+
+    @batch
     def visit_obj(self, query):
-        self.iter = self.driver_obj(query[1])
+        self.visit(query[1])
+        self.mapFunc = partial(self._visit_driver_obj, key=self.parent_key, driver=self.driver_obj)
+
+    @staticmethod
+    def _visit_driver_assoc(it, key, driver):
+        with ExitStack() as stack:
+            for root, parent, k, i in it:
+                id_i = i[":id"]
+                res = driver(key, id_i)
+                stack.callback(i.__setitem__, str(key), res)
+        return it
 
     def visit_assoc(self, query):
         if (len(query) > 2):
             self.visit(query[2])
-
+        assoc = query[1]
+        self.parent_key = assoc
         # TODO: investigate if eager computation here is necessary
         self.parent_iter = iter(list(leaf_it(self.root)))
         self.iter = walk(self.root)
-        assoc = query[1]
-        self.parent_key = assoc
-
-        # invariant: self.iter has the list of keys we are computing assocs for
-        leaves = []
-        with ExitStack() as stack:
-            for root, parent, k, i in self.iter:
-                id_i = i[":id"]
-                res = self.driver_assoc(assoc, id_i)
-                stack.callback(i.__setitem__, str(assoc), res)
-                leaves.append(list(undictify(res)))
+        self._visit_driver_assoc(self.iter, assoc, self.driver_assoc)
         self.iter = iter([self.root])
 
     def driver_obj(self, id_list):

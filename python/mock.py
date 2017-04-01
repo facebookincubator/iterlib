@@ -16,8 +16,9 @@ class MockExecutor(execute.AbstractSyntaxTreeVisitor):
        a database to implement similar functionality.
     """
 
-    def driver_obj(self, id_list):
-        return [int(x) + 1 for x in id_list]
+    def driver_obj(self, key, id):
+        return {':id': id, 'name': 'id%d' % id,
+                 'age': random.choice([16, 17, 18])}
 
     def driver_assoc(self, assoc, id):
         l = []

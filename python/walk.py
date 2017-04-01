@@ -59,8 +59,8 @@ def walk(d):
 def leaf_it(d):
     """Similar to walk above, but doesn't provide reference to
        parent"""
-    for parent, key, y in _walk({}, None, d):
-        yield y
+    for parent, key, leaf in _walk({}, None, d):
+        yield leaf
 
 
 def _path_walk(path, d):

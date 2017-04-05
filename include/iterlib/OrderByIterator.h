@@ -97,6 +97,7 @@ class OrderByIterator : public WrappedIterator<T> {
 }
 
 using OrderByIterator = detail::OrderByIterator<Item>;
+extern template class detail::OrderByIterator<Item>;
 
 }
 #include "iterlib/OrderByIterator-inl.h"

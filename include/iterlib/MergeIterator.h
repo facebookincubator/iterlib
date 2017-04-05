@@ -38,6 +38,7 @@ class MergeIterator : public UnionIterator<T> {
 }
 
 using MergeIterator = detail::MergeIterator<Item>;
+extern template class detail::MergeIterator<Item>;
 
 }
 #include "iterlib/MergeIterator-inl.h"

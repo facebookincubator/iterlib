@@ -34,6 +34,7 @@ private:
 }
 
 using CountIterator = detail::CountIterator<Item>;
+extern template class detail::CountIterator<Item>;
 
 }
 

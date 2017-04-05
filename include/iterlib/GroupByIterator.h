@@ -88,6 +88,8 @@ class GroupBySortedCountIterator : public WrappedIterator<T> {
 
 using GroupByIterator = detail::GroupByIterator<Item>;
 using GroupBySortedCountIterator = detail::GroupBySortedCountIterator<Item>;
+extern template class detail::GroupByIterator<Item>;
+extern template class detail::GroupBySortedCountIterator<Item>;
 
 }
 

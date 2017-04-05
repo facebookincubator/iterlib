@@ -49,5 +49,6 @@ class LetIterator : public WrappedIterator<T> {
 }
 
 using LetIterator = detail::LetIterator<Item>;
+extern template class detail::LetIterator<Item>;
 
 }

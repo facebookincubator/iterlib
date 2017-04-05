@@ -39,6 +39,7 @@ private:
 }
 
 using ProjectIterator = detail::ProjectIterator<Item>;
+extern template class detail::ProjectIterator<Item>;
 
 }
 

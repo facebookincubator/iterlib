@@ -98,5 +98,8 @@ using UnionIterator = detail::UnionIterator<Item>;
 using SortedMergeIterator = detail::SortedMergeIterator<Item>;
 using ConcatIterator = detail::ConcatIterator<Item>;
 
+extern template class detail::OrIterator<detail::StdLessComp<Item>, Item>;
+extern template class detail::OrIterator<detail::IdLessComp<Item>, Item>;
+extern template class detail::ConcatIterator<Item>;
 }
 #include "iterlib/OrIterator-inl.h"

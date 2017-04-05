@@ -36,6 +36,7 @@ class LimitIterator : public WrappedIterator<T> {
 }
 
 using LimitIterator = detail::LimitIterator<Item>;
+extern template class detail::LimitIterator<Item>;
 
 }
 #include "iterlib/LimitIterator-inl.h"

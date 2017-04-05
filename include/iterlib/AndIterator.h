@@ -30,6 +30,7 @@ private:
 }
 
 using AndIterator = detail::AndIterator<Item>;
+extern template class detail::AndIterator<Item>;
 
 }
 

@@ -33,6 +33,7 @@ private:
 }
 
 using ReverseIterator = detail::ReverseIterator<Item>;
+extern template class detail::ReverseIterator<Item>;
 
 }
 

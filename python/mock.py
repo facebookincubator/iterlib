@@ -51,6 +51,7 @@ if __name__ == '__main__':
     parser.add_argument("-t", "--tree", help="hierarchical tree output",
                         action="store_true")
     args, query = parser.parse_known_args()
+    random.seed(100)  # so tests are deterministic
     if args.tree:
         tree = test_execute_hier(query[0])
         pprint_json(execute.materialize_walk(tree))

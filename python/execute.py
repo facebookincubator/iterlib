@@ -2,6 +2,7 @@
 #
 # Copyright (c) 2016-present, Facebook, Inc. All rights reserved.
 
+import collections
 import filterexpr
 import heapq
 import itertools
@@ -15,7 +16,7 @@ import visitor
 from contextlib import ExitStack
 from functools import partial
 from item import Item, IDKEY
-from typing import Callable, Iterable, List
+from typing import Callable, Iterable, List, Any
 from walk import dict_to_item, leaf_it, materialize_walk, path_it, walk
 
 
@@ -82,18 +83,32 @@ def reduce(function, iterable, initializer=None):
     return value
 
 
+def merge_one(x: Any, y: Any) -> Any:
+    if isinstance(x, dict) and isinstance(y, dict):
+        return merge_dicts(x, y)
+    if isinstance(x, collections.Iterable) and \
+       isinstance(y, collections.Iterable):
+       return merge([iter(x), iter(y)])
+    return operator.add(x, y)
+
+
 def merge_dicts(x: dict, y: dict) -> dict:
     common_keys = set(x.keys()) & set(y.keys())
-    z = {k: operator.add(x[k], y[k]) for k in common_keys}
+    # Do not merge {':id': 3} {':id': 3} to {':id': 6}
+    common_keys -= set([':id'])
+    z = {k: merge_one(x[k], y[k]) for k in common_keys}
     z = dict(list(x.items()) + list(y.items()) + list(z.items()))
     return z
 
 
 def merge_dicts_iter(x, y):
-    x = next(x)
-    y = next(y)
-    z = merge_dicts(x, y)
-    yield z
+    for xi, yi in itertools.zip_longest(x, y, fillvalue=None):
+        if type(xi) == type(None):
+            yield yi
+        if type(yi) == type(None):
+            yield xi
+        zi = merge_dicts(xi, yi)
+        yield zi
 
 
 def merge(its):
@@ -234,6 +249,11 @@ class AbstractSyntaxTreeVisitor(visitor.Visitor):
         self.visit(query[2])
         self.mapFunc = lambda x: itertools.groupby(x, project_item(query[1]))
 
+    def _update_iter(self, iter):
+        self.iter = iter
+        # TODO: replace_iter_walk(old, new)
+        self.root = Item({None:  self.iter})
+
     def visit_and(self, query):
         iters = []
         for q in query[1:]:
@@ -283,7 +303,7 @@ class AbstractSyntaxTreeVisitor(visitor.Visitor):
             self.visit(q)
             iters.append(self.iter)
 
-        self.iter = merge(iters)
+        self._update_iter(merge(iters))
 
     def visit_apply(self, query):
         self.visit(query[2])

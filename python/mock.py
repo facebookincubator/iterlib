@@ -7,7 +7,7 @@ import execute
 import random
 import validate
 
-from item import pprint_json
+from item import pprint_json, IDKEY
 
 
 class MockExecutor(execute.AbstractSyntaxTreeVisitor):
@@ -17,13 +17,13 @@ class MockExecutor(execute.AbstractSyntaxTreeVisitor):
     """
 
     def driver_obj(self, key, id):
-        return {':id': id, 'name': 'id%d' % id,
+        return {IDKEY: id, 'name': 'id%d' % id,
                  'age': random.choice([16, 17, 18])}
 
     def driver_assoc(self, assoc, id):
         l = []
         for x in range(id * 10, id * 10 + 3):
-            l.append({':id': x, 'name': 'id%d' % x,
+            l.append({IDKEY: x, 'name': 'id%d' % x,
                       'age': random.choice([16, 17, 18])})
         return l
 

@@ -8,7 +8,7 @@ import json
 import leveldb
 import validate
 
-from item import pprint_json
+from item import pprint_json, IDKEY
 
 
 class KVExecutor(execute.AbstractSyntaxTreeVisitor):
@@ -48,7 +48,7 @@ class KVExecutor(execute.AbstractSyntaxTreeVisitor):
             # TODO: handle this in RangeIter using a prefix scan
             if id1 != id or atype != assoc:
                 break
-            l.append({':id': id2, ':time': atime, 'data': v})
+            l.append({IDKEY: id2, ':time': atime, 'data': v})
         return l
 
 

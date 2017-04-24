@@ -7,7 +7,7 @@
 """
 
 import collections
-from item import Item
+from item import Item, IDKEY
 
 
 def is_leaf(d):
@@ -15,7 +15,7 @@ def is_leaf(d):
     for k, v in d.items():
         if isinstance(v, list):
             for i in v:
-                if ":id" in i:
+                if IDKEY in i:
                     has_child = True
                     break
     return not has_child
@@ -65,7 +65,7 @@ def leaf_it(d):
 
 def _path_walk(path, d):
     if isinstance(d, dict):
-        if ":id" in d:
+        if IDKEY in d:
             yield (path, d)
         else:
             for k, v in d.items():

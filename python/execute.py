@@ -14,7 +14,7 @@ import visitor
 
 from contextlib import ExitStack
 from functools import partial
-from item import Item
+from item import Item, IDKEY
 from typing import Callable, Iterable, List
 from walk import dict_to_item, leaf_it, materialize_walk, path_it, walk
 
@@ -63,12 +63,12 @@ def count_it(iter: Iterable) -> int:
 
 def intersect(its: List[Iterable]) -> Iterable:
     source = heapq.merge(*its, reverse=True)
-    return iter([k for k, g in itertools.groupby(source, project_item([":id"])) if count_it(g) == len(its)])
+    return iter([k for k, g in itertools.groupby(source, project_item([IDKEY])) if count_it(g) == len(its)])
 
 
 def union(its: List[Iterable]) -> Iterable:
     source = heapq.merge(*its, reverse=True)
-    return iter([k for k, g in itertools.groupby(source, project_item([":id"]))])
+    return iter([k for k, g in itertools.groupby(source, project_item([IDKEY]))])
 
 
 def reduce(function, iterable, initializer=None):
@@ -105,7 +105,7 @@ def merge(its):
 
 def dictify(id_list: Iterable[int]) -> Iterable[Item]:
     for x in id_list:
-        yield Item({":id": x})
+        yield Item({IDKEY: x})
 
 
 def ldictify(id_list):
@@ -114,7 +114,7 @@ def ldictify(id_list):
 
 def undictify(dict_it: Iterable[Item]) -> Iterable[int]:
     for i in dict_it:
-        yield i[":id"]
+        yield i[IDKEY]
 
 
 def apply_func(x, mapFunc):
@@ -128,7 +128,7 @@ class AbstractSyntaxTreeVisitor(visitor.Visitor):
         self.parent_iter = None
         self.parent_key = None
         if id1s:
-            self.root = {id1[":id"]: {} for id1 in id1s}
+            self.root = {id1[IDKEY]: {} for id1 in id1s}
         else:
             self.root = Item({None:  self.iter})
         self.id1s = id1s
@@ -316,7 +316,7 @@ class AbstractSyntaxTreeVisitor(visitor.Visitor):
     def _visit_driver_obj(it, key, driver):
         with ExitStack() as stack:
             for i in it:
-                id_i = i[":id"]
+                id_i = i[IDKEY]
                 res = driver(key, id_i)
                 for k, v in res.items():
                     stack.callback(i.__setitem__, k, v)
@@ -331,7 +331,7 @@ class AbstractSyntaxTreeVisitor(visitor.Visitor):
     def _visit_driver_assoc(it, key, driver):
         with ExitStack() as stack:
             for root, parent, k, i in it:
-                id_i = i[":id"]
+                id_i = i[IDKEY]
                 res = driver(key, id_i)
                 stack.callback(i.__setitem__, str(key), res)
         return it

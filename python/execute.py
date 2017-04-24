@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python3.6
 #
 # Copyright (c) 2016-present, Facebook, Inc. All rights reserved.
 
@@ -95,23 +95,24 @@ def merge_one(x: Any, y: Any) -> Any:
 def merge_dicts(x: dict, y: dict) -> dict:
     common_keys = set(x.keys()) & set(y.keys())
     # Do not merge {':id': 3} {':id': 3} to {':id': 6}
-    common_keys -= set([':id'])
+    common_keys -= set([IDKEY])
     z = {k: merge_one(x[k], y[k]) for k in common_keys}
     z = dict(list(x.items()) + list(y.items()) + list(z.items()))
     return z
 
 
-def merge_dicts_iter(x, y):
+def merge_dicts_iter(x: dict, y: dict) -> dict:
     for xi, yi in itertools.zip_longest(x, y, fillvalue=None):
         if type(xi) == type(None):
             yield yi
-        if type(yi) == type(None):
+        elif type(yi) == type(None):
             yield xi
-        zi = merge_dicts(xi, yi)
-        yield zi
+        else:
+            zi = merge_dicts(xi, yi)
+            yield zi
 
 
-def merge(its):
+def merge(its: List[Iterable]) -> Iterable:
     return reduce(merge_dicts_iter, its)
 
 # Utilities to deal with the syntactically more convenient

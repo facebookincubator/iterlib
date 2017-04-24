@@ -68,6 +68,128 @@ class Queries(unittest.TestCase):
         """
         self.assertMapEqual(test_execute("(->> (3 2 1) (obj) (limit 2))"), expected)
 
+    def test_merge_with_multiple_keys(self):
+        expected = """
+        [
+            {
+                "None": [
+                    {
+                        "200": [
+                            {
+                                ":id": 30,
+                                "age": 16,
+                                "name": "id30"
+                            },
+                            {
+                                ":id": 31,
+                                "age": 17,
+                                "name": "id31"
+                            },
+                            {
+                                ":id": 32,
+                                "age": 17,
+                                "name": "id32"
+                            }
+                        ],
+                        "300": [
+                            {
+                                ":id": 30,
+                                "age": 18,
+                                "name": "id30"
+                            },
+                            {
+                                ":id": 31,
+                                "age": 16,
+                                "name": "id31"
+                            },
+                            {
+                                ":id": 32,
+                                "age": 18,
+                                "name": "id32"
+                            }
+                        ],
+                        ":id": 3
+                    },
+                    {
+                        "200": [
+                            {
+                                ":id": 20,
+                                "age": 16,
+                                "name": "id20"
+                            },
+                            {
+                                ":id": 21,
+                                "age": 18,
+                                "name": "id21"
+                            },
+                            {
+                                ":id": 22,
+                                "age": 17,
+                                "name": "id22"
+                            }
+                        ],
+                        "300": [
+                            {
+                                ":id": 20,
+                                "age": 16,
+                                "name": "id20"
+                            },
+                            {
+                                ":id": 21,
+                                "age": 16,
+                                "name": "id21"
+                            },
+                            {
+                                ":id": 22,
+                                "age": 18,
+                                "name": "id22"
+                            }
+                        ],
+                        ":id": 2
+                    },
+                    {
+                        "200": [
+                            {
+                                ":id": 10,
+                                "age": 18,
+                                "name": "id10"
+                            },
+                            {
+                                ":id": 11,
+                                "age": 17,
+                                "name": "id11"
+                            },
+                            {
+                                ":id": 12,
+                                "age": 17,
+                                "name": "id12"
+                            }
+                        ],
+                        "300": [
+                            {
+                                ":id": 10,
+                                "age": 17,
+                                "name": "id10"
+                            },
+                            {
+                                ":id": 11,
+                                "age": 17,
+                                "name": "id11"
+                            },
+                            {
+                                ":id": 12,
+                                "age": 16,
+                                "name": "id12"
+                            }
+                        ],
+                        ":id": 1
+                    }
+                ]
+            }
+        ]
+        """
+        self.assertMapEqual(test_execute("(merge (assoc 200 (3 2 1)) (assoc 300 (3 2 1)))"), expected)
+
 
 if __name__ == '__main__':
     unittest.main()

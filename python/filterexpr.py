@@ -35,7 +35,7 @@ def expr(query):
             is_num = False
             val = '"{0}"'.format(str(val))
         # The overhead of parsing can be avoided using the commented method
-        # below, but it seems to create problems on python3.5
+        # below, but it seems to create problems on python3.6
         # https://bugs.python.org/issue25555
         node = ast.parse("lambda x: x['%s'] %s %s" %
                          (name, query[0], str(val)))

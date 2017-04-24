@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python3.6
 # Copyright (c) 2016-present, Facebook, Inc. All rights reserved.
 
 import ast
@@ -113,10 +113,11 @@ class Queries(unittest.TestCase):
                          [{"foo": {"a": 1, "b": 2, "c": 3}}])
 
     def test_merge(self):
-        data1 = self.stringify_json([{"a": [1], "b": [2]}])
-        data2 = self.stringify_json([{"a": [3, 4], "b": [5, 6]}])
-        self.assertEqual(list(test_execute("(merge (json_literal %s) (json_literal %s))" % (data1, data2))),
-                         [{"a": [1, 3, 4], "b": [2, 5, 6]}])
+        data1 = self.stringify_json([{"a": list(dictify([1])), "b": list(dictify([2]))}])
+        data2 = self.stringify_json([{"a": list(dictify([3, 4])), "b": list(dictify([5, 6]))}])
+        it = test_execute("(merge (json_literal %s) (json_literal %s))" % (data1, data2))
+        m = execute.materialize_walk(it)
+        self.assertEqual(m, [{"a": list(dictify([1, 3, 4])), "b": list(dictify([2, 5, 6]))}])
 
     def test_exists(self):
         self.assertEqual(list(test_execute("(exists (and (3 2 1) (6 5 4)))")),

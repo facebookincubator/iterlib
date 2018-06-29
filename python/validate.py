@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python3.6
 # Copyright (c) 2016-present, Facebook, Inc. All rights reserved.
 import sys
 sys.path.append("/usr/lib/python2.6/site-packages")

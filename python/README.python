@@ -4,7 +4,7 @@ Installation:
 Requires python-3.5
 Requires python-jsonschema
 
-python3.5 tests.py
+python3.6 tests.py
 
 Notes:
 =====

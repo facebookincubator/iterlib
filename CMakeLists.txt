@@ -25,11 +25,13 @@ find_package(Folly)
 find_package(Rocksdb)
 find_package(BZip2)
 find_package(JeMalloc)
+find_package(RxCpp)
 
 include_directories(${FOLLY_INCLUDE_DIR})
 include_directories(${ROCKSDB_INCLUDE_DIR})
 include_directories(${BZIP2_INCLUDE_DIR})
 include_directories(${JEMALLOC_INCLUDE_DIR})
+include_directories(${RXCPP_INCLUDE_DIR})
 
 set(Boost_NO_SYSTEM_PATHS 1)
 set(BOOST_ROOT "/usr/local/boost/1.55.0")
@@ -63,6 +65,11 @@ set(SOURCES
   src/FilterIterator.cpp
   src/Item.cpp
 )
+
+if (RXCPP_FOUND)
+set(SOURCES ${SOURCES} src/RxQuery.cpp)
+endif (RXCPP_FOUND)
+
 
 add_library(dynamic-static STATIC ${DSOURCES})
 add_library(dynamic-shared SHARED ${DSOURCES})
@@ -108,6 +115,10 @@ set(TESTS
         tests/GroupByIteratorTest.cpp
         tests/FilterIteratorTest.cpp
 )
+
+if (RXCPP_FOUND)
+set(TESTS ${TESTS} tests/RxTest.cpp)
+endif (RXCPP_FOUND)
 
 if (BOOST_FOUND)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I ${BOOST_INCLUDE_DIR}")

@@ -3,11 +3,15 @@
 
 
 import argparse
+import asyncio
 import execute
 import random
 import validate
 
+from async_test import wait_for
 from item import pprint_json, IDKEY
+from mock_user import UserQuery
+from query import CountQueryable, ProjectQueryable, WhereQueryable, NestQueryable, LetQueryable, OrderbyQueryable, TakeQueryable
 
 
 class MockExecutor(execute.AbstractSyntaxTreeVisitor):
@@ -27,12 +31,35 @@ class MockExecutor(execute.AbstractSyntaxTreeVisitor):
                       'age': random.choice([16, 17, 18])})
         return l
 
+QUERYABLES = {
+    'count': CountQueryable,
+    'project': ProjectQueryable,
+    'where': WhereQueryable,
+    'nest': NestQueryable,
+    'let': LetQueryable,
+    'order_by': OrderbyQueryable,
+    'take': TakeQueryable,
+}
+
+
+def convert(query):
+    """Convert a s-expression based query into a Queryable"""
+    op = query[0]
+    rest = query[1:]
+    queryable = None
+    if type(op) == str:
+        queryable = QUERYABLES.get(op, None)
+    if queryable is None:
+        return UserQuery(query[0])
+    else:
+        return queryable(convert(rest))
+
 
 def test_execute(expr):
     e = validate.validate(expr)
     visitor = MockExecutor(None)
-    visitor.visit(e['query'])
-    return visitor.iter
+    wait_for(visitor.visit(convert(e['query'])))
+    return wait_for(execute.materialize_walk(visitor.iter))
 
 
 def test_execute_hier(expr):
@@ -41,8 +68,8 @@ def test_execute_hier(expr):
     """
     e = validate.validate(expr)
     visitor = MockExecutor(None)
-    visitor.visit(e['query'])
-    return visitor.root
+    wait_for(visitor.visit(convert(e['query'])))
+    return wait_for(execute.materialize_walk(visitor.root))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -10,9 +10,7 @@ from contextlib import ExitStack
 from execute import dictify
 from execute import ldictify
 from mock import test_execute
-
-path_it = execute.path_it
-leaf_it = execute.leaf_it
+from walk import path_it, leaf_it
 
 
 class Queries(unittest.TestCase):
